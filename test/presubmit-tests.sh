@@ -108,6 +108,27 @@ function initialize_environment() {
   readonly IS_PRESUBMIT_EXEMPT_PR
 }
 
+function get_node() {
+  echo "Script is running as $(whoami) on $(hostname) and directory structure is $(find .)"
+  # It's Stretch and https://github.com/tektoncd/dashboard/blob/master/package.json 
+  # denotes the Node.js and npm versions
+  apt-get update
+  apt-get install -y curl
+  curl -O https://nodejs.org/dist/v10.15.3/node-v10.15.3-linux-x64.tar.xz
+  tar xf node-v10.15.3-linux-x64.tar.xz
+  export PATH=$PATH:$(pwd)/node-v10.15.3-linux-x64/bin
+}
+
+function node_test() {
+  echo "Running node tests from $(pwd)"
+  mkdir ~/.npm-global
+  npm config set prefix '~/.npm-global'
+  export PATH=$PATH:$HOME/.npm-global/bin
+  npm ci # similar to `npm install` but ensures all versions from lock file
+  npm run test:ci
+  echo ""
+}
+
 # Run a go tool, installing it first if necessary.
 # Parameters: $1 - tool package/dir for go get/install.
 #             $2 - tool to run.
@@ -129,9 +150,7 @@ function report_go_test() {
   # Run tests in verbose mode to capture details.
   # go doesn't like repeating -v, so remove if passed.
   local args=" $@ "
-  # FIXME(vdemeester) https://github.com/tektoncd/dashboard/issues/73
-  #local go_test="go test -race -v ${args/ -v / }"
-  local go_test="go test -v ${args/ -v / }"
+  local go_test="go test -race -v ${args/ -v / }"
   # Just run regular go tests if not on Prow.
   echo "Running tests with '${go_test}'"
   local report=$(mktemp)
@@ -163,6 +182,7 @@ function run_tests() {
   header "Running tests"
   local failed=0
   #docker build -f ./Dockerfile_test . || failed = 1
+  node_test || failed=1
   dep ensure -v || failed=1
   report_go_test ./pkg/... || failed=1
   results_banner "Build" ${failed}
@@ -172,6 +192,7 @@ function run_tests() {
 # Process flags and run tests accordingly.
 function main() {
   initialize_environment
+  get_node
   if (( IS_PRESUBMIT_EXEMPT_PR )) && (( ! IS_DOCUMENTATION_PR )); then
     header "Commit only contains changes that don't require tests, skipping"
     exit 0
@@ -190,6 +211,10 @@ function main() {
     go version
     echo ">> git version"
     git version
+    echo ">> npm version"
+    npm --version
+    echo ">> Node.js version"
+    node --version
     echo ">> bazel version"
     bazel version 2> /dev/null
     if [[ "${DOCKER_IN_DOCKER_ENABLED}" == "true" ]]; then

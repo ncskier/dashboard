@@ -14,29 +14,64 @@ limitations under the License.
 import {
   getExtensions,
   getExtensionsErrorMessage,
+  getNamespaces,
   getPipelines,
   getPipelinesErrorMessage,
+  getSelectedNamespace,
+  getPipelineRuns,
+  getPipelineRunsErrorMessage,
   getTasks,
   getTasksErrorMessage,
+  getTaskRuns,
+  getTaskRunsErrorMessage,
   isFetchingExtensions,
   isFetchingPipelines,
-  isFetchingTasks
+  isFetchingPipelineRuns,
+  isFetchingTasks,
+  isFetchingTaskRuns
 } from '.';
 import * as extensionSelectors from './extensions';
+import * as namespaceSelectors from './namespaces';
 import * as pipelineSelectors from './pipelines';
+import * as pipelineRunsSelectors from './pipelineRuns';
 import * as taskSelectors from './tasks';
+import * as taskRunsSelectors from './taskRuns';
 
+const namespace = 'default';
 const extensions = { fake: 'extensions' };
 const pipelines = { fake: 'pipelines' };
+const pipelineRuns = { fake: 'pipelineRuns' };
 const tasks = { fake: 'tasks' };
+const taskRuns = { fake: 'taskRuns' };
 const state = {
   extensions,
   namespaces: {
-    selected: 'default'
+    selected: namespace
   },
   pipelines,
   tasks
 };
+
+it('getSelectedNamespace', () => {
+  jest
+    .spyOn(namespaceSelectors, 'getSelectedNamespace')
+    .mockImplementation(() => namespace);
+  expect(getSelectedNamespace(state)).toEqual(namespace);
+  expect(namespaceSelectors.getSelectedNamespace).toHaveBeenCalledWith(
+    state.namespaces
+  );
+});
+
+it('getNamespaces', () => {
+  const namespaces = [namespace];
+  jest
+    .spyOn(namespaceSelectors, 'getNamespaces')
+    .mockImplementation(() => namespaces);
+  expect(getNamespaces(state)).toEqual(namespaces);
+  expect(namespaceSelectors.getNamespaces).toHaveBeenCalledWith(
+    state.namespaces
+  );
+});
 
 it('getExtensions', () => {
   jest
@@ -70,7 +105,6 @@ it('isFetchingExtensions', () => {
 });
 
 it('getPipelines', () => {
-  const namespace = 'default';
   jest
     .spyOn(pipelineSelectors, 'getPipelines')
     .mockImplementation(() => pipelines);
@@ -102,8 +136,39 @@ it('isFetchingPipelines', () => {
   );
 });
 
+it('getPipelineRuns', () => {
+  jest
+    .spyOn(pipelineRunsSelectors, 'getPipelineRuns')
+    .mockImplementation(() => pipelineRuns);
+  expect(getPipelineRuns(state)).toEqual(pipelineRuns);
+  expect(pipelineRunsSelectors.getPipelineRuns).toHaveBeenCalledWith(
+    state.pipelineRuns,
+    namespace
+  );
+});
+
+it('getPipelineRunsErrorMessage', () => {
+  const errorMessage = 'fake error message';
+  jest
+    .spyOn(pipelineRunsSelectors, 'getPipelineRunsErrorMessage')
+    .mockImplementation(() => errorMessage);
+  expect(getPipelineRunsErrorMessage(state)).toEqual(errorMessage);
+  expect(
+    pipelineRunsSelectors.getPipelineRunsErrorMessage
+  ).toHaveBeenCalledWith(state.pipelineRuns);
+});
+
+it('isFetchingPipelineRuns', () => {
+  jest
+    .spyOn(pipelineRunsSelectors, 'isFetchingPipelineRuns')
+    .mockImplementation(() => true);
+  expect(isFetchingPipelineRuns(state)).toBe(true);
+  expect(pipelineRunsSelectors.isFetchingPipelineRuns).toHaveBeenCalledWith(
+    state.pipelineRuns
+  );
+});
+
 it('getTasks', () => {
-  const namespace = 'default';
   jest.spyOn(taskSelectors, 'getTasks').mockImplementation(() => tasks);
   expect(getTasks(state)).toEqual(tasks);
   expect(taskSelectors.getTasks).toHaveBeenCalledWith(state.tasks, namespace);
@@ -122,4 +187,36 @@ it('isFetchingTasks', () => {
   jest.spyOn(taskSelectors, 'isFetchingTasks').mockImplementation(() => true);
   expect(isFetchingTasks(state)).toBe(true);
   expect(taskSelectors.isFetchingTasks).toHaveBeenCalledWith(state.tasks);
+});
+
+it('getTaskRuns', () => {
+  jest
+    .spyOn(taskRunsSelectors, 'getTaskRuns')
+    .mockImplementation(() => taskRuns);
+  expect(getTaskRuns(state)).toEqual(taskRuns);
+  expect(taskRunsSelectors.getTaskRuns).toHaveBeenCalledWith(
+    state.taskRuns,
+    namespace
+  );
+});
+
+it('getTaskRunsErrorMessage', () => {
+  const errorMessage = 'fake error message';
+  jest
+    .spyOn(taskRunsSelectors, 'getTaskRunsErrorMessage')
+    .mockImplementation(() => errorMessage);
+  expect(getTaskRunsErrorMessage(state)).toEqual(errorMessage);
+  expect(taskRunsSelectors.getTaskRunsErrorMessage).toHaveBeenCalledWith(
+    state.taskRuns
+  );
+});
+
+it('isFetchingTaskRuns', () => {
+  jest
+    .spyOn(taskRunsSelectors, 'isFetchingTaskRuns')
+    .mockImplementation(() => true);
+  expect(isFetchingTaskRuns(state)).toBe(true);
+  expect(taskRunsSelectors.isFetchingTaskRuns).toHaveBeenCalledWith(
+    state.taskRuns
+  );
 });

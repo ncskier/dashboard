@@ -14,19 +14,29 @@ limitations under the License.
 import { combineReducers } from 'redux';
 import keyBy from 'lodash.keyby';
 
-function byName(state = { default: {} }, action) {
+function byId(state = {}, action) {
   switch (action.type) {
-    case 'NAMESPACES_FETCH_SUCCESS':
-      return keyBy(action.data, 'metadata.name');
+    case 'TASK_RUNS_FETCH_SUCCESS':
+      return keyBy(action.data, 'metadata.uid');
     default:
       return state;
   }
 }
 
-function selected(state = 'default', action) {
+function byNamespace(state = {}, action) {
   switch (action.type) {
-    case 'NAMESPACE_SELECT':
-      return action.namespace;
+    case 'TASK_RUNS_FETCH_SUCCESS':
+      const taskRuns = {};
+      action.data.forEach(taskRun => {
+        const { name, uid } = taskRun.metadata;
+        taskRuns[name] = uid;
+      });
+
+      const { namespace } = action;
+      return {
+        ...state,
+        [namespace]: taskRuns
+      };
     default:
       return state;
   }
@@ -34,10 +44,10 @@ function selected(state = 'default', action) {
 
 function isFetching(state = false, action) {
   switch (action.type) {
-    case 'NAMESPACES_FETCH_REQUEST':
+    case 'TASK_RUNS_FETCH_REQUEST':
       return true;
-    case 'NAMESPACES_FETCH_SUCCESS':
-    case 'NAMESPACES_FETCH_FAILURE':
+    case 'TASK_RUNS_FETCH_SUCCESS':
+    case 'TASK_RUNS_FETCH_FAILURE':
       return false;
     default:
       return state;
@@ -46,10 +56,10 @@ function isFetching(state = false, action) {
 
 function errorMessage(state = null, action) {
   switch (action.type) {
-    case 'NAMESPACES_FETCH_FAILURE':
+    case 'TASK_RUNS_FETCH_FAILURE':
       return action.error.message;
-    case 'NAMESPACES_FETCH_REQUEST':
-    case 'NAMESPACES_FETCH_SUCCESS':
+    case 'TASK_RUNS_FETCH_REQUEST':
+    case 'TASK_RUNS_FETCH_SUCCESS':
       return null;
     default:
       return state;
@@ -57,24 +67,27 @@ function errorMessage(state = null, action) {
 }
 
 export default combineReducers({
-  byName,
+  byId,
+  byNamespace,
   errorMessage,
-  isFetching,
-  selected
+  isFetching
 });
 
-export function getNamespaces(state) {
-  return Object.keys(state.byName);
+export function getTaskRuns(state, namespace) {
+  const taskRuns = state.byNamespace[namespace];
+  return taskRuns ? Object.values(taskRuns).map(id => state.byId[id]) : [];
 }
 
-export function getSelectedNamespace(state) {
-  return state.selected;
+export function getTaskRun(state, name, namespace) {
+  const taskRuns = state.byNamespace[namespace] || {};
+  const taskRunId = taskRuns[name];
+  return taskRunId ? state.byId[taskRunId] : null;
 }
 
-export function getNamespacesErrorMessage(state) {
+export function getTaskRunsErrorMessage(state) {
   return state.errorMessage;
 }
 
-export function isFetchingNamespaces(state) {
+export function isFetchingTaskRuns(state) {
   return state.isFetching;
 }
