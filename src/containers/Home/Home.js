@@ -46,6 +46,13 @@ export const Home = /* istanbul ignore next */ ({ extensions }) => {
               <Link to="/tasks">Tasks</Link>
             </StructuredListCell>
           </StructuredListRow>
+          <StructuredListRow className="pipeline">
+            <StructuredListCell>
+              <Link to="/importresources">
+                Import Tekton resources from repository
+              </Link>
+            </StructuredListCell>
+          </StructuredListRow>
           {!!extensions.length && (
             <StructuredListRow className="pipeline">
               <StructuredListCell>

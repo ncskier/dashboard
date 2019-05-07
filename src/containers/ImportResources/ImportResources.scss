@@ -11,12 +11,21 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-export { default as Extension } from './Extension';
-export { default as Extensions } from './Extensions';
-export { default as Home } from './Home';
-export { default as PipelineRun } from './PipelineRun';
-export { default as PipelineRuns } from './PipelineRuns';
-export { default as Pipelines } from './Pipelines';
-export { default as Tasks } from './Tasks';
-export { default as TaskRuns } from './TaskRuns';
-export { default as ImportResources } from './ImportResources';
+.ImportRepoForm {
+  width: 50% !important; 
+  margin: 1rem !important; 
+  margin-left: 0 !important;
+}
+
+.bx--text-input__field-wrapper {
+  width: 100%;
+}
+
+.bx--label {
+  font-size: 0.9rem;
+}
+
+.ImportHeader {
+  font-size: 22px;
+  margin-bottom: 4rem;
+}

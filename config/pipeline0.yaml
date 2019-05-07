@@ -1,0 +1,28 @@
+apiVersion: tekton.dev/v1alpha1
+kind: Pipeline
+metadata:
+  name: pipeline0
+spec:
+  resources:
+  - name: git-source
+    type: git
+  params:
+  - name: pathToResourceFiles
+    description: The path to the resource files to apply
+    default: /workspace/git-source/config
+  - name: namespace
+    description: The kubernetes namespace into which the resources are applied
+    default: default
+  tasks:
+  - name: pipeline0-task
+    taskRef:
+      name: pipeline0-task
+    params:
+    - name: pathToResourceFiles
+      value: ${params.pathToResourceFiles}
+    - name: namespace
+      value: ${params.namespace}
+    resources:
+      inputs:
+      - name: git-source
+        resource: git-source

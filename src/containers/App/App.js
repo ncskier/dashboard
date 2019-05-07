@@ -37,6 +37,7 @@ import { fetchExtensions } from '../../actions/extensions';
 import { getExtensions } from '../../reducers';
 
 import '../../components/App/App.scss';
+import ImportResources from '../ImportResources';
 
 export /* istanbul ignore next */ class App extends Component {
   componentDidMount() {
@@ -76,6 +77,11 @@ export /* istanbul ignore next */ class App extends Component {
               <Route
                 path="/pipelines/:pipelineName/runs/:pipelineRunName"
                 component={PipelineRun}
+              />
+              <Route
+                path="/importresources"
+                exact
+                component={ImportResources}
               />
               <Route path="/extensions" exact component={Extensions} />
               {extensions
