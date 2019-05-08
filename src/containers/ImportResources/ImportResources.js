@@ -21,14 +21,22 @@ import {
 
 import '../../components/Definitions/Definitions.scss';
 import './ImportResources.scss';
+import { connect } from 'react-redux';
 import { createPipelineRun } from '../../api';
+import { fetchNamespaces } from '../../actions/namespaces';
+import {
+  getNamespaces,
+  getNamespacesErrorMessage,
+  isFetchingNamespaces
+} from '../../reducers';
+
+let namespacesArray = [];
 
 class ImportResources extends Component {
-  constructor(props) {
+  /* constructor(props) {
     super(props);
     this.state = {
       repositoryURL: '',
-      directory: '',
       namespace: '',
       serviceAccount: ''
     };
@@ -37,17 +45,30 @@ class ImportResources extends Component {
     this.handleServiceAccount = this.handleServiceAccount.bind(this);
     this.handleTextInput = this.handleTextInput.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+  } */
+
+  state = {
+    repositoryURL: '',
+    namespace: '',
+    serviceAccount: ''
+  };
+
+  // handleNamespace = this.handleNamespace.bind(this);
+  // handleServiceAccount = this.handleServiceAccount.bind(this);
+  // handleTextInput = this.handleTextInput.bind(this);
+  // handleSubmit = this.handleSubmit.bind(this);
+
+  componentDidMount() {
+    this.props.fetchNamespaces();
   }
 
   handleNamespace(data) {
-    console.log(data);
     this.setState({
       namespace: data.selectedItem
     });
   }
 
   handleServiceAccount(data) {
-    console.log(data);
     this.setState({
       serviceAccount: data.selectedItem
     });
@@ -66,7 +87,6 @@ class ImportResources extends Component {
     const gitresourcename = 'git-source';
     const gitcommit = 'master';
     const repourl = this.state.repositoryURL;
-    // const directoryToPass = this.state.directory;
     const namespaceToPass = this.state.namespace;
     const serviceaccount = this.state.serviceAccount;
     const payload = {
@@ -76,14 +96,37 @@ class ImportResources extends Component {
       gitcommit,
       repourl
     };
-    console.log(payload);
+    window.alert(payload);
     createPipelineRun(payload, namespaceToPass);
     event.preventDefault();
   }
 
   render() {
-    const namespaces = ['default'];
+    const { error, loading, namespaces } = this.props;
     const serviceAccounts = ['tekton-pipelines'];
+
+    this.handleNamespace = this.handleNamespace.bind(this);
+    this.handleServiceAccount = this.handleServiceAccount.bind(this);
+    this.handleTextInput = this.handleTextInput.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+
+    console.log(namespaces);
+
+    if (error) {
+      namespacesArray = ['error loading namespaces'];
+    }
+
+    if (loading && !namespaces.length) {
+      namespacesArray = [''];
+    }
+
+    const namespacesIterator = namespaces.values();
+
+    for (let i = 0; i < namespacesIterator.length; i += 1) {
+      const mapNamespace = namespacesIterator.next().value;
+      const namespaceName = mapNamespace.metadata.name;
+      namespacesArray.push(namespaceName);
+    }
 
     return (
       <main>
@@ -95,13 +138,6 @@ class ImportResources extends Component {
           className="ImportRepoForm"
           name="repositoryURL"
           value={this.state.repositoryURL}
-          onChange={this.handleTextInput}
-        />
-        <FormLabel> Directory </FormLabel>
-        <TextInput
-          className="ImportRepoForm"
-          name="directory"
-          value={this.state.directory}
           onChange={this.handleTextInput}
         />
         <FormLabel> Namespace </FormLabel>
@@ -124,4 +160,24 @@ class ImportResources extends Component {
   }
 }
 
-export default ImportResources;
+ImportResources.defaultProps = {
+  namespaces: []
+};
+
+/* istanbul ignore next */
+function mapStateToProps(state) {
+  return {
+    error: getNamespacesErrorMessage(state),
+    loading: isFetchingNamespaces(state),
+    namespaces: getNamespaces(state)
+  };
+}
+
+const mapDispatchToProps = {
+  fetchNamespaces
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(ImportResources);
