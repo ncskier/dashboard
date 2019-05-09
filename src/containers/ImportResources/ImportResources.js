@@ -150,11 +150,7 @@ class ImportResources extends Component {
         <div className="row">
           <div className="firstColumn"> </div>
           <div className="column">
-            <Button
-              className="submitButton"
-              kind="primary"
-              onClick={this.handleSubmit}
-            >
+            <Button kind="primary" onClick={this.handleSubmit}>
               Import and Apply
             </Button>
           </div>
