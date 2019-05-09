@@ -14,28 +14,32 @@ limitations under the License.
 package endpoints
 
 import (
-	"strconv"
-	"strings"
+	"net/http"
 	"net/http/httputil"
 	"net/url"
-	"net/http"
 	"os"
+	"strconv"
+	"strings"
 
-	"github.com/tektoncd/dashboard/pkg/utils"
 	restful "github.com/emicklei/go-restful"
 	logging "github.com/tektoncd/dashboard/pkg/logging"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"github.com/tektoncd/dashboard/pkg/utils"
 	corev1 "k8s.io/api/core/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 // extensionLabel - service with this extensionLabel is registered as extension
-const extensionLabel =  "tekton-dashboard-extension=true"  
-// urlKey - extension path is specified by the annotation with the urlKey 
+const extensionLabel = "tekton-dashboard-extension=true"
+
+// urlKey - extension path is specified by the annotation with the urlKey
 const urlKey = "tekton-dashboard-endpoints"
-// bundleLocatonKey - extension UI bundle location annotation 
+
+// bundleLocatonKey - extension UI bundle location annotation
 const bundleLocationKey = "tekton-dashboard-bundle-location"
-// displayNameKey - extension display name annotation 
+
+// displayNameKey - extension display name annotation
 const displayNameKey = "tekton-dashboard-display-name"
+
 // extensionRoot
 const extensionRoot = "/extension"
 
@@ -87,6 +91,8 @@ func (r Resource) RegisterEndpoints(container *restful.Container) {
 	wsv1.Route(wsv1.PUT("/{namespace}/credential/{name}").To(r.updateCredential))
 	wsv1.Route(wsv1.DELETE("/{namespace}/credential/{name}").To(r.deleteCredential))
 
+	wsv1.Route(wsv1.GET("/{namespace}/serviceaccount").To(r.getAllServiceAccounts))
+
 	container.Add(wsv1)
 }
 
@@ -131,15 +137,16 @@ func (r Resource) RegisterReadinessProbes(container *restful.Container) {
 // "label: tekton-dashboard-extension=true" in the service defines the extension
 // "annotation: tekton-dashboard-endpoints=<URL>" specifies the path for the extension
 type Extension struct {
-	Name           string  `json:"name"`
-	URL            string  `json:"url"`
-	Port           string  `json:"port"`
-	DisplayName    string  `json:"displayname"`
-	BundleLocation string  `json:"bundlelocation"`
+	Name           string `json:"name"`
+	URL            string `json:"url"`
+	Port           string `json:"port"`
+	DisplayName    string `json:"displayname"`
+	BundleLocation string `json:"bundlelocation"`
 }
-var	extensions     []Extension
 
-// RegisterExtensions - this discovers the extensions and registers them as the REST API extension 
+var extensions []Extension
+
+// RegisterExtensions - this discovers the extensions and registers them as the REST API extension
 func (r Resource) RegisterExtensions(container *restful.Container, namespace string) {
 	logging.Log.Info("Adding API for extensions")
 	svcs, err := r.K8sClient.CoreV1().Services(namespace).List(metav1.ListOptions{LabelSelector: extensionLabel})
@@ -157,8 +164,8 @@ func (r Resource) RegisterExtensions(container *restful.Container, namespace str
 		base := extensionRoot + "/" + svc.ObjectMeta.Name
 		logging.Log.Debugf("Extension URL: %s", base)
 		url, ok := svc.ObjectMeta.Annotations[urlKey]
-		ext := Extension { Name: svc.ObjectMeta.Name, URL: url, Port: getPort(svc),
-			DisplayName: svc.ObjectMeta.Annotations[displayNameKey],
+		ext := Extension{Name: svc.ObjectMeta.Name, URL: url, Port: getPort(svc),
+			DisplayName:    svc.ObjectMeta.Annotations[displayNameKey],
 			BundleLocation: svc.ObjectMeta.Annotations[bundleLocationKey]}
 		paths := []string{}
 		if ok {
@@ -171,8 +178,8 @@ func (r Resource) RegisterExtensions(container *restful.Container, namespace str
 		}
 		for _, path := range paths {
 			// extension handler is registered at the url
-			routingPath := strings.TrimSuffix(base + "/" + path, "/")
-			logging.Log.Debugf("Registering path: %s", base + "/" + path)
+			routingPath := strings.TrimSuffix(base+"/"+path, "/")
+			logging.Log.Debugf("Registering path: %s", base+"/"+path)
 			ws.Route(ws.GET(routingPath).To(ext.HandleExtension))
 			ws.Route(ws.POST(routingPath).To(ext.HandleExtension))
 			ws.Route(ws.PUT(routingPath).To(ext.HandleExtension))
@@ -201,13 +208,13 @@ func (r Resource) RegisterExtensions(container *restful.Container, namespace str
 
 // HandleExtension - this routes request to the extension service
 func (ext Extension) HandleExtension(request *restful.Request, response *restful.Response) {
-	target, err := url.Parse("http://" +  ext.Name + ":" + ext.Port + "/")
+	target, err := url.Parse("http://" + ext.Name + ":" + ext.Port + "/")
 	if err != nil {
 		utils.RespondError(response, err, http.StatusInternalServerError)
 		return
 	}
 	logging.Log.Debugf("Path in URL: %+v", request.Request.URL.Path)
-	request.Request.URL.Path = strings.TrimPrefix(request.Request.URL.Path, "/v1/extension/" + ext.Name)
+	request.Request.URL.Path = strings.TrimPrefix(request.Request.URL.Path, "/v1/extension/"+ext.Name)
 	logging.Log.Debugf("Path in rerouting URL: %+v", request.Request.URL.Path)
 	proxy := httputil.NewSingleHostReverseProxy(target)
 	proxy.ServeHTTP(response, request.Request)
@@ -226,6 +233,7 @@ func (r Resource) getAllExtensions(request *restful.Request, response *restful.R
 func getPort(svc corev1.Service) string {
 	return strconv.Itoa(int(svc.Spec.Ports[0].Port))
 }
+
 // Write Content-Location header within POST methods and set StatusCode to 201
 // Headers MUST be set before writing to body (if any) to succeed
 func writeResponseLocation(request *restful.Request, response *restful.Response, identifier string) {
