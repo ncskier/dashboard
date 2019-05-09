@@ -10,9 +10,6 @@ spec:
   - name: pathToResourceFiles
     description: The path to the resource files to apply
     default: /workspace/git-source/config
-  - name: namespace
-    description: The kubernetes namespace into which the resources are applied
-    default: default
   tasks:
   - name: pipeline0-task
     taskRef:
@@ -20,8 +17,6 @@ spec:
     params:
     - name: pathToResourceFiles
       value: ${params.pathToResourceFiles}
-    - name: namespace
-      value: ${params.namespace}
     resources:
       inputs:
       - name: git-source
