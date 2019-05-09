@@ -33,30 +33,11 @@ import {
 let namespacesArray = [];
 
 class ImportResources extends Component {
-  /* constructor(props) {
-    super(props);
-    this.state = {
-      repositoryURL: '',
-      namespace: '',
-      serviceAccount: ''
-    };
-
-    this.handleNamespace = this.handleNamespace.bind(this);
-    this.handleServiceAccount = this.handleServiceAccount.bind(this);
-    this.handleTextInput = this.handleTextInput.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
-  } */
-
   state = {
     repositoryURL: '',
     namespace: '',
     serviceAccount: ''
   };
-
-  // handleNamespace = this.handleNamespace.bind(this);
-  // handleServiceAccount = this.handleServiceAccount.bind(this);
-  // handleTextInput = this.handleTextInput.bind(this);
-  // handleSubmit = this.handleSubmit.bind(this);
 
   componentDidMount() {
     this.props.fetchNamespaces();
@@ -96,7 +77,6 @@ class ImportResources extends Component {
       gitcommit,
       repourl
     };
-    window.alert(payload);
     createPipelineRun(payload, namespaceToPass);
     event.preventDefault();
   }
@@ -109,8 +89,6 @@ class ImportResources extends Component {
     this.handleServiceAccount = this.handleServiceAccount.bind(this);
     this.handleTextInput = this.handleTextInput.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
-
-    console.log(namespaces);
 
     if (error) {
       namespacesArray = ['error loading namespaces'];
@@ -133,28 +111,54 @@ class ImportResources extends Component {
         <h1 className="ImportHeader">
           Import Tekton resources from repository
         </h1>
-        <FormLabel> Repository URL </FormLabel>
-        <TextInput
-          className="ImportRepoForm"
-          name="repositoryURL"
-          value={this.state.repositoryURL}
-          onChange={this.handleTextInput}
-        />
-        <FormLabel> Namespace </FormLabel>
-        <Dropdown
-          className="ImportRepoForm"
-          items={namespaces}
-          value={this.state.namespace}
-          onChange={this.handleNamespace}
-        />
-        <FormLabel> Service account </FormLabel>
-        <Dropdown
-          className="ImportRepoForm"
-          items={serviceAccounts}
-          value={this.state.serviceAccount}
-          onChange={this.handleServiceAccount}
-        />
-        <Button onClick={this.handleSubmit}>Import and Apply</Button>
+        <div className="row">
+          <div className="firstColumn">
+            <FormLabel> Repository URL </FormLabel>
+          </div>
+          <div className="column">
+            <TextInput
+              name="repositoryURL"
+              value={this.state.repositoryURL}
+              onChange={this.handleTextInput}
+            />
+          </div>
+        </div>
+        <div className="row">
+          <div className="firstColumn">
+            <FormLabel> Namespace </FormLabel>
+          </div>
+          <div className="column">
+            <Dropdown
+              items={namespaces}
+              value={this.state.namespace}
+              onChange={this.handleNamespace}
+            />
+          </div>
+        </div>
+        <div className="row">
+          <div className="firstColumn">
+            <FormLabel> Service account </FormLabel>
+          </div>
+          <div className="column">
+            <Dropdown
+              items={serviceAccounts}
+              value={this.state.serviceAccount}
+              onChange={this.handleServiceAccount}
+            />
+          </div>
+        </div>
+        <div className="row">
+          <div className="firstColumn"> </div>
+          <div className="column">
+            <Button
+              className="submitButton"
+              kind="primary"
+              onClick={this.handleSubmit}
+            >
+              Import and Apply
+            </Button>
+          </div>
+        </div>
       </main>
     );
   }

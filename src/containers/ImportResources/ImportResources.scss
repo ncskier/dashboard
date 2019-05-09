@@ -11,21 +11,41 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-.ImportRepoForm {
-  width: 50% !important; 
-  margin: 1rem !important; 
-  margin-left: 0 !important;
-}
-
 .bx--text-input__field-wrapper {
   width: 100%;
 }
 
 .bx--label {
-  font-size: 0.9rem;
+  font-size: 1rem !important;
 }
 
 .ImportHeader {
-  font-size: 22px;
+  font-size: 1.5rem;
   margin-bottom: 4rem;
+}
+
+.firstColumn {
+  padding: 1.5%;
+  text-align: right;
+  float: left;
+  width: 15%;
+}
+
+.column {
+  padding: 1.5%;
+  text-align: left;
+  float: left;
+  width: 40%;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+}
+
+/* Clear floats after the columns */
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
 }
