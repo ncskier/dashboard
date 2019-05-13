@@ -12,35 +12,22 @@ limitations under the License.
 */
 
 import React, { Component } from 'react';
-import {
-  Dropdown,
-  TextInput,
-  FormLabel,
-  Button
-} from 'carbon-components-react';
+import { TextInput, FormLabel, Button } from 'carbon-components-react';
 
 import '../../components/Definitions/Definitions.scss';
 import './ImportResources.scss';
-import { connect } from 'react-redux';
-import { createPipelineRun } from '../../api';
-import { fetchNamespaces } from '../../actions/namespaces';
-import {
-  getNamespaces,
-  getNamespacesErrorMessage,
-  isFetchingNamespaces
-} from '../../reducers';
 
-let namespacesArray = [];
+import { createPipelineRun } from '../../api';
+import ServiceAccountsDropdown from '../ServiceAccountsDropdown';
 
 class ImportResources extends Component {
-  state = {
-    repositoryURL: '',
-    namespace: '',
-    serviceAccount: ''
-  };
-
-  componentDidMount() {
-    this.props.fetchNamespaces();
+  constructor(props) {
+    super(props);
+    this.state = {
+      repositoryURL: '',
+      namespace: '',
+      serviceAccount: ''
+    };
   }
 
   handleNamespace(data) {
@@ -82,32 +69,13 @@ class ImportResources extends Component {
   }
 
   render() {
-    const { error, loading, namespaces } = this.props;
-    const serviceAccounts = ['tekton-pipelines'];
-
     this.handleNamespace = this.handleNamespace.bind(this);
     this.handleServiceAccount = this.handleServiceAccount.bind(this);
     this.handleTextInput = this.handleTextInput.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
 
-    if (error) {
-      namespacesArray = ['error loading namespaces'];
-    }
-
-    if (loading && !namespaces.length) {
-      namespacesArray = [''];
-    }
-
-    const namespacesIterator = namespaces.values();
-
-    for (let i = 0; i < namespacesIterator.length; i += 1) {
-      const mapNamespace = namespacesIterator.next().value;
-      const namespaceName = mapNamespace.metadata.name;
-      namespacesArray.push(namespaceName);
-    }
-
     return (
-      <main>
+      <div>
         <h1 className="ImportHeader">
           Import Tekton resources from repository
         </h1>
@@ -125,26 +93,10 @@ class ImportResources extends Component {
         </div>
         <div className="row">
           <div className="firstColumn">
-            <FormLabel> Namespace </FormLabel>
-          </div>
-          <div className="column">
-            <Dropdown
-              items={namespaces}
-              value={this.state.namespace}
-              onChange={this.handleNamespace}
-            />
-          </div>
-        </div>
-        <div className="row">
-          <div className="firstColumn">
             <FormLabel> Service account </FormLabel>
           </div>
           <div className="column">
-            <Dropdown
-              items={serviceAccounts}
-              value={this.state.serviceAccount}
-              onChange={this.handleServiceAccount}
-            />
+            <ServiceAccountsDropdown />
           </div>
         </div>
         <div className="row">
@@ -155,29 +107,9 @@ class ImportResources extends Component {
             </Button>
           </div>
         </div>
-      </main>
+      </div>
     );
   }
 }
 
-ImportResources.defaultProps = {
-  namespaces: []
-};
-
-/* istanbul ignore next */
-function mapStateToProps(state) {
-  return {
-    error: getNamespacesErrorMessage(state),
-    loading: isFetchingNamespaces(state),
-    namespaces: getNamespaces(state)
-  };
-}
-
-const mapDispatchToProps = {
-  fetchNamespaces
-};
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(ImportResources);
+export default ImportResources;

@@ -158,3 +158,8 @@ export function getNamespaces() {
   const uri = `${apiRoot}/v1/namespaces`;
   return get(uri).then(checkData);
 }
+
+export function getServiceAccounts(namespace) {
+  const uri = getAPI('serviceaccount', { namespace });
+  return get(uri).then(checkData);
+}

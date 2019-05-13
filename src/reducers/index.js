@@ -11,10 +11,11 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { combineReducers } from 'redux';
+import { combineReducers } from '../../../../../../../Library/Caches/typescript/2.9/node_modules/redux';
 
 import extensions, * as extensionSelectors from './extensions';
 import namespaces, * as namespaceSelectors from './namespaces';
+import serviceAccounts, * as serviceAccountSelectors from './serviceAccounts';
 import pipelines, * as pipelineSelectors from './pipelines';
 import pipelineRuns, * as pipelineRunsSelectors from './pipelineRuns';
 import tasks, * as taskSelectors from './tasks';
@@ -26,7 +27,8 @@ export default combineReducers({
   pipelines,
   pipelineRuns,
   tasks,
-  taskRuns
+  taskRuns,
+  serviceAccounts
 });
 
 export function getSelectedNamespace(state) {
@@ -43,6 +45,32 @@ export function getNamespacesErrorMessage(state) {
 
 export function isFetchingNamespaces(state) {
   return namespaceSelectors.isFetchingNamespaces(state.namespaces);
+}
+
+export function getSelectedServiceAccount(state) {
+  return serviceAccountSelectors.getSelectedServiceAccount(
+    state.serviceAccounts
+  );
+}
+
+export function getServiceAccounts(state) {
+  const namespace = getSelectedNamespace(state);
+  return serviceAccountSelectors.getServiceAccounts(
+    state.serviceAccounts,
+    namespace
+  );
+}
+
+export function getServiceAccountsErrorMessage(state) {
+  return serviceAccountSelectors.getServiceAccountsErrorMessage(
+    state.serviceAccounts
+  );
+}
+
+export function isFetchingServiceAccounts(state) {
+  return serviceAccountSelectors.isFetchingServiceAccounts(
+    state.serviceAccounts
+  );
 }
 
 export function getExtensions(state) {
