@@ -13,27 +13,22 @@ limitations under the License.
 
 import React, { Component } from 'react';
 import { TextInput, FormLabel, Button } from 'carbon-components-react';
+import { connect } from 'react-redux';
 
 import '../../components/Definitions/Definitions.scss';
 import './ImportResources.scss';
 
 import { createPipelineRun } from '../../api';
 import ServiceAccountsDropdown from '../ServiceAccountsDropdown';
+import { getSelectedNamespace } from '../../reducers';
 
 class ImportResources extends Component {
   constructor(props) {
     super(props);
     this.state = {
       repositoryURL: '',
-      namespace: '',
       serviceAccount: ''
     };
-  }
-
-  handleNamespace(data) {
-    this.setState({
-      namespace: data.selectedItem
-    });
   }
 
   handleServiceAccount(data) {
@@ -51,11 +46,11 @@ class ImportResources extends Component {
   }
 
   handleSubmit(event) {
+    const { namespace } = this.props;
     const pipelinename = 'pipeline0';
     const gitresourcename = 'git-source';
     const gitcommit = 'master';
     const repourl = this.state.repositoryURL;
-    const namespaceToPass = this.state.namespace;
     const serviceaccount = this.state.serviceAccount;
     const payload = {
       pipelinename,
@@ -64,12 +59,11 @@ class ImportResources extends Component {
       gitcommit,
       repourl
     };
-    createPipelineRun(payload, namespaceToPass);
+    createPipelineRun(payload, namespace);
     event.preventDefault();
   }
 
   render() {
-    this.handleNamespace = this.handleNamespace.bind(this);
     this.handleServiceAccount = this.handleServiceAccount.bind(this);
     this.handleTextInput = this.handleTextInput.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -112,4 +106,11 @@ class ImportResources extends Component {
   }
 }
 
-export default ImportResources;
+/* istanbul ignore next */
+function mapStateToProps(state) {
+  return {
+    namespace: getSelectedNamespace(state)
+  };
+}
+
+export default connect(mapStateToProps)(ImportResources);

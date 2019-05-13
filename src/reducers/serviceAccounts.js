@@ -23,21 +23,10 @@ function byId(state = {}, action) {
   }
 }
 
-function byNamespace(state = {}, action) {
+function byName(state = {}, action) {
   switch (action.type) {
     case 'SERVICE_ACCOUNTS_FETCH_SUCCESS':
-      const serviceAccounts = {};
-      action.data.forEach(serviceAccount => {
-        console.log(serviceAccount);
-        const { name, uid } = serviceAccount.metadata;
-        serviceAccounts[name] = uid;
-      });
-
-      const { namespace } = action;
-      return {
-        ...state,
-        [namespace]: serviceAccounts
-      };
+      return keyBy(action.data, 'metadata.name');
     default:
       return state;
   }
@@ -78,17 +67,14 @@ function errorMessage(state = null, action) {
 
 export default combineReducers({
   byId,
-  byNamespace,
+  byName,
   errorMessage,
   isFetching,
   selected
 });
 
-export function getServiceAccounts(state, namespace) {
-  const serviceAccounts = state.byNamespace[namespace];
-  return serviceAccounts
-    ? Object.values(serviceAccounts).map(id => state.byId[id])
-    : [];
+export function getServiceAccounts(state) {
+  return Object.keys(state.byName);
 }
 
 export function getSelectedServiceAccount(state) {

@@ -12,6 +12,7 @@ limitations under the License.
 */
 
 import { getServiceAccounts } from '../api';
+import { getSelectedNamespace } from '../reducers';
 
 export function selectServiceAccount(serviceAccount) {
   return {
@@ -27,13 +28,14 @@ export function fetchServiceAccountsSuccess(data) {
   };
 }
 
-export function fetchServiceAccounts(namespace) {
-  return async dispatch => {
+export function fetchServiceAccounts() {
+  return async (dispatch, getState) => {
     dispatch({ type: 'SERVICE_ACCOUNTS_FETCH_REQUEST' });
     let serviceAccounts;
     try {
+      const namespace = getSelectedNamespace(getState());
       serviceAccounts = await getServiceAccounts(namespace);
-      dispatch(fetchServiceAccountsSuccess(serviceAccounts));
+      dispatch(fetchServiceAccountsSuccess(serviceAccounts, namespace));
     } catch (error) {
       dispatch({ type: 'SERVICE_ACCOUNTS_FETCH_FAILURE', error });
     }
