@@ -20,10 +20,11 @@ export function selectServiceAccount(serviceAccount) {
   };
 }
 
-export function fetchServiceAccountsSuccess(data) {
+export function fetchServiceAccountsSuccess(data, namespace) {
   return {
     type: 'SERVICE_ACCOUNTS_FETCH_SUCCESS',
-    data
+    data,
+    namespace
   };
 }
 
@@ -33,7 +34,7 @@ export function fetchServiceAccounts(namespace) {
     let serviceAccounts;
     try {
       serviceAccounts = await getServiceAccounts(namespace);
-      dispatch(fetchServiceAccountsSuccess(serviceAccounts));
+      dispatch(fetchServiceAccountsSuccess(serviceAccounts, namespace));
     } catch (error) {
       dispatch({ type: 'SERVICE_ACCOUNTS_FETCH_FAILURE', error });
     }

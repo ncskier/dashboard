@@ -96,7 +96,7 @@ class ImportResources extends Component {
             <FormLabel> Service account </FormLabel>
           </div>
           <div className="column">
-            <ServiceAccountsDropdown />
+            <ServiceAccountsDropdown id="service-account-dropdown" />
           </div>
         </div>
         <div className="row">
