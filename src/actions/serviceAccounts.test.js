@@ -11,7 +11,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import configureStore from '../../../../../../../Library/Caches/typescript/2.9/node_modules/@types/redux-mock-store';
+import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 
 import * as API from '../api';
