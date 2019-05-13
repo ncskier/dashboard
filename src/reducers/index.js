@@ -11,7 +11,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { combineReducers } from '../../../../../../../Library/Caches/typescript/2.9/node_modules/redux';
+import { combineReducers } from 'redux';
 
 import extensions, * as extensionSelectors from './extensions';
 import namespaces, * as namespaceSelectors from './namespaces';
