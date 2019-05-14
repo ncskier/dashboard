@@ -12,7 +12,14 @@ limitations under the License.
 */
 
 import React, { Component } from 'react';
-import { TextInput, FormLabel, Button } from 'carbon-components-react';
+// import Link from 'react-router-dom';
+import {
+  ToastNotification,
+  TextInput,
+  FormLabel,
+  Button,
+  Tooltip
+} from 'carbon-components-react';
 import { connect } from 'react-redux';
 
 import '../../components/Definitions/Definitions.scss';
@@ -27,7 +34,8 @@ class ImportResources extends Component {
     super(props);
     this.state = {
       repositoryURL: '',
-      serviceAccount: ''
+      serviceAccount: '',
+      submitSuccess: false
     };
   }
 
@@ -60,6 +68,9 @@ class ImportResources extends Component {
       repourl
     };
     createPipelineRun(payload, namespace);
+    this.setState({
+      submitSuccess: true
+    });
     event.preventDefault();
   }
 
@@ -75,7 +86,12 @@ class ImportResources extends Component {
         </h1>
         <div className="row">
           <div className="firstColumn">
-            <FormLabel> Repository URL </FormLabel>
+            <FormLabel>
+              Repository URL
+              <Tooltip triggerText="">
+                Represents the location of the YAML definitions to be applied
+              </Tooltip>
+            </FormLabel>
           </div>
           <div className="column">
             <TextInput
@@ -87,10 +103,18 @@ class ImportResources extends Component {
         </div>
         <div className="row">
           <div className="firstColumn">
-            <FormLabel> Service account </FormLabel>
+            <FormLabel>
+              Service Account
+              <Tooltip triggerText="">
+                Represents the SA that the PipelineRun applying resources will
+                run under
+              </Tooltip>
+            </FormLabel>
           </div>
           <div className="column">
-            <ServiceAccountsDropdown />
+            <div className="dropdownHalf">
+              <ServiceAccountsDropdown />
+            </div>
           </div>
         </div>
         <div className="row">
@@ -99,6 +123,21 @@ class ImportResources extends Component {
             <Button kind="primary" onClick={this.handleSubmit}>
               Import and Apply
             </Button>
+          </div>
+        </div>
+        <div className="row">
+          <div className="firstColumn"> </div>
+          <div className="column">
+            {this.state.submitSuccess && (
+              <ToastNotification
+                kind="success"
+                title="Triggered PipelineRun to apply Tekton resources"
+                subtitle=""
+                caption={
+                  <a href="#/pipelines/pipeline0/runs"> Pipeline0 logs </a>
+                }
+              />
+            )}
           </div>
         </div>
       </div>
