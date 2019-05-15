@@ -62,6 +62,9 @@ func (r Resource) RegisterEndpoints(container *restful.Container) {
 	logging.Log.Info("Adding v1, and API for k8s resources and pipelines")
 
 	wsv1.Route(wsv1.GET("/").To(r.getAllNamespaces))
+
+	wsv1.Route(wsv1.GET("/{namespace}/serviceaccount").To(r.getAllServiceAccounts))
+
 	wsv1.Route(wsv1.GET("/{namespace}/pipeline").To(r.getAllPipelines))
 	wsv1.Route(wsv1.GET("/{namespace}/pipeline/{name}").To(r.getPipeline))
 
@@ -90,8 +93,6 @@ func (r Resource) RegisterEndpoints(container *restful.Container) {
 	wsv1.Route(wsv1.POST("/{namespace}/credential").To(r.createCredential))
 	wsv1.Route(wsv1.PUT("/{namespace}/credential/{name}").To(r.updateCredential))
 	wsv1.Route(wsv1.DELETE("/{namespace}/credential/{name}").To(r.deleteCredential))
-
-	wsv1.Route(wsv1.GET("/{namespace}/serviceaccount").To(r.getAllServiceAccounts))
 
 	container.Add(wsv1)
 }
