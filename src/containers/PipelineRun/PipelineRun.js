@@ -14,10 +14,24 @@ limitations under the License.
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { InlineNotification } from 'carbon-components-react';
+import {
+  InlineNotification,
+  StructuredListSkeleton
+} from 'carbon-components-react';
 
-import { getPipelineRun, getTaskRun, getTasks } from '../../api';
-import { getSelectedNamespace } from '../../reducers';
+import {
+  getPipelineRun,
+  getPipelineRunsErrorMessage,
+  getSelectedNamespace,
+  getTasks,
+  getTaskRun,
+  getTasksErrorMessage,
+  getTaskRunsErrorMessage
+} from '../../reducers';
+
+import { fetchPipelineRun } from '../../actions/pipelineRuns';
+import { fetchTasks } from '../../actions/tasks';
+import { fetchTaskRuns } from '../../actions/taskRuns';
 
 import RunHeader from '../../components/RunHeader';
 import StepDetails from '../../components/StepDetails';
@@ -30,28 +44,32 @@ import {
   stepsStatus
 } from '../../utils';
 
+import store from '../../store/index';
+
 import '../../components/Run/Run.scss';
 
 export /* istanbul ignore next */ class PipelineRunContainer extends Component {
   state = {
-    error: null,
-    loading: true,
-    pipelineRun: {},
     selectedStepId: null,
     selectedTaskId: null,
-    taskRuns: [],
-    tasks: []
+    loading: true
   };
 
   componentDidMount() {
-    this.loadPipelineRunData();
+    this.fetchData();
   }
 
   componentDidUpdate(prevProps) {
-    const { match } = this.props;
+    const { match, namespace } = this.props;
     const { pipelineRunName } = match.params;
-    if (pipelineRunName !== prevProps.match.params.pipelineRunName) {
-      this.loadPipelineRunData();
+    const { match: prevMatch, namespace: prevNamespace } = prevProps;
+    const { pipelineRunName: prevPipelineRunName } = prevMatch.params;
+
+    if (
+      namespace !== prevNamespace ||
+      pipelineRunName !== prevPipelineRunName
+    ) {
+      this.fetchData();
     }
   }
 
@@ -59,55 +77,32 @@ export /* istanbul ignore next */ class PipelineRunContainer extends Component {
     this.setState({ selectedStepId, selectedTaskId });
   };
 
-  async loadPipelineRunData() {
-    const { match, namespace } = this.props;
-    const { pipelineRunName } = match.params;
-
-    try {
-      const [pipelineRun, tasks] = await Promise.all([
-        getPipelineRun(pipelineRunName, namespace),
-        getTasks(namespace)
-      ]);
-      const {
-        status: { taskRuns: taskRunsStatus }
-      } = pipelineRun;
-      const { message, status } = getStatus(pipelineRun);
-      if (status === 'False' && !taskRunsStatus) {
-        throw message;
-      }
-      const taskRunNames = Object.keys(taskRunsStatus);
-
-      this.setState(
-        {
-          pipelineRun,
-          tasks,
-          loading: false
-        },
-        () => {
-          this.loadTaskRuns(taskRunNames);
-        }
-      );
-    } catch (error) {
-      this.setState({ error, loading: false });
+  loadPipelineRunData = () => {
+    const { pipelineRun } = this.props;
+    const {
+      status: { taskRuns: taskRunsStatus }
+    } = pipelineRun;
+    const { message, status } = getStatus(pipelineRun);
+    if (status === 'False' && !taskRunsStatus) {
+      throw message;
     }
-  }
+    const taskRunNames = Object.keys(taskRunsStatus);
 
-  async loadTaskRuns(taskRunNames) {
-    const { namespace } = this.props;
-    let taskRuns = await Promise.all(
-      taskRunNames.map(taskRunName => getTaskRun(taskRunName, namespace))
+    return { pipelineRun, taskRunNames };
+  };
+
+  loadTaskRuns = (pipelineRun, taskRunNames) => {
+    let runs = taskRunNames.map(taskRunName =>
+      getTaskRun(store.getState(), { name: taskRunName })
     );
 
     const {
-      pipelineRun: {
-        status: { taskRuns: taskRunDetails }
-      },
-      tasks
-    } = this.state;
+      status: { taskRuns: taskRunDetails }
+    } = pipelineRun;
 
-    taskRuns = taskRuns.map(taskRun => {
+    runs = runs.map(taskRun => {
       const taskName = taskRun.spec.taskRef.name;
-      const task = selectedTask(taskName, tasks);
+      const task = selectedTask(taskName, this.props.tasks);
       const taskRunName = taskRun.metadata.name;
       const { reason, status: succeeded } = getStatus(taskRun);
       const { pipelineTaskName } = taskRunDetails[taskRunName];
@@ -124,27 +119,54 @@ export /* istanbul ignore next */ class PipelineRunContainer extends Component {
       };
     });
 
-    this.setState({ taskRuns });
+    return runs;
+  };
+
+  fetchData() {
+    const { match } = this.props;
+    const { pipelineRunName } = match.params;
+    this.setState({ loading: true }, async () => {
+      await Promise.all([
+        this.props.fetchPipelineRun(pipelineRunName),
+        this.props.fetchTasks(),
+        this.props.fetchTaskRuns()
+      ]);
+      this.setState({ loading: false });
+    });
   }
 
   render() {
-    const { match } = this.props;
+    const { match, error } = this.props;
     const { pipelineRunName } = match.params;
-    const {
-      error,
-      loading,
-      pipelineRun,
-      selectedStepId,
-      selectedTaskId,
-      taskRuns
-    } = this.state;
 
-    // TODO: actual error handling
-    let errorMessage;
-    if (error && error.response) {
-      errorMessage = error.response.status === 404 ? 'Not Found' : 'Error';
+    const { selectedStepId, selectedTaskId, loading } = this.state;
+
+    if (loading) {
+      return <StructuredListSkeleton border />;
     }
 
+    if (error) {
+      return (
+        <InlineNotification
+          kind="error"
+          title="Error loading pipeline run"
+          subtitle={JSON.stringify(error, Object.getOwnPropertyNames(error))}
+        />
+      );
+    }
+
+    if (!this.props.pipelineRun) {
+      return (
+        <InlineNotification
+          kind="info"
+          title="Cannot load pipeline run"
+          subtitle={`Pipeline Run ${pipelineRunName} not found`}
+        />
+      );
+    }
+
+    const { pipelineRun, taskRunNames } = this.loadPipelineRunData();
+    const taskRuns = this.loadTaskRuns(pipelineRun, taskRunNames);
     const taskRun = selectedTaskRun(selectedTaskId, taskRuns) || {};
 
     const { definition, reason, status, stepName, stepStatus } = taskRunStep(
@@ -161,38 +183,29 @@ export /* istanbul ignore next */ class PipelineRunContainer extends Component {
     return (
       <>
         <RunHeader
-          error={errorMessage}
           lastTransitionTime={lastTransitionTime}
           loading={loading}
           runName={pipelineRunName}
           reason={pipelineRunReason}
           status={pipelineRunStatus}
         />
-        {error ? (
-          <InlineNotification
-            kind="error"
-            title="Error loading pipeline run"
-            subtitle={JSON.stringify(error, Object.getOwnPropertyNames(error))}
+        <div className="tasks">
+          <TaskTree
+            onSelect={this.handleTaskSelected}
+            selectedTaskId={selectedTaskId}
+            taskRuns={taskRuns}
           />
-        ) : (
-          <div className="tasks">
-            <TaskTree
-              onSelect={this.handleTaskSelected}
-              selectedTaskId={selectedTaskId}
-              taskRuns={taskRuns}
+          {selectedStepId && (
+            <StepDetails
+              definition={definition}
+              reason={reason}
+              status={status}
+              stepName={stepName}
+              stepStatus={stepStatus}
+              taskRun={taskRun}
             />
-            {selectedStepId && (
-              <StepDetails
-                definition={definition}
-                reason={reason}
-                status={status}
-                stepName={stepName}
-                stepStatus={stepStatus}
-                taskRun={taskRun}
-              />
-            )}
-          </div>
-        )}
+          )}
+        </div>
       </>
     );
   }
@@ -208,10 +221,27 @@ PipelineRunContainer.propTypes = {
 };
 
 /* istanbul ignore next */
-function mapStateToProps(state) {
+function mapStateToProps(state, props) {
   return {
-    namespace: getSelectedNamespace(state)
+    error:
+      getPipelineRunsErrorMessage(state) ||
+      getTasksErrorMessage(state) ||
+      getTaskRunsErrorMessage(state),
+    namespace: getSelectedNamespace(state),
+    pipelineRun: getPipelineRun(state, {
+      name: props.match.params.pipelineRunName
+    }),
+    tasks: getTasks(state)
   };
 }
 
-export default connect(mapStateToProps)(PipelineRunContainer);
+const mapDispatchToProps = {
+  fetchPipelineRun,
+  fetchTasks,
+  fetchTaskRuns
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(PipelineRunContainer);
