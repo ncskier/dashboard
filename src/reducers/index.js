@@ -39,14 +39,6 @@ export function getNamespaces(state) {
   return namespaceSelectors.getNamespaces(state.namespaces);
 }
 
-export function getNamespacesErrorMessage(state) {
-  return namespaceSelectors.getNamespacesErrorMessage(state.namespaces);
-}
-
-export function isFetchingNamespaces(state) {
-  return namespaceSelectors.isFetchingNamespaces(state.namespaces);
-}
-
 export function getSelectedServiceAccount(state) {
   return serviceAccountSelectors.getSelectedServiceAccount(
     state.serviceAccounts
