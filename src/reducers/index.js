@@ -65,6 +65,10 @@ export function isFetchingServiceAccounts(state) {
   );
 }
 
+export function isFetchingNamespaces(state) {
+  return namespaceSelectors.isFetchingNamespaces(state.namespaces);
+}
+
 export function getExtensions(state) {
   return extensionSelectors
     .getExtensions(state.extensions)
