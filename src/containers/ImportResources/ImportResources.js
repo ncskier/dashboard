@@ -12,6 +12,7 @@ limitations under the License.
 */
 
 import React, { Component } from 'react';
+
 // import Link from 'react-router-dom';
 import {
   ToastNotification,
@@ -35,7 +36,8 @@ class ImportResources extends Component {
     this.state = {
       repositoryURL: '',
       serviceAccount: '',
-      submitSuccess: false
+      submitSuccess: false,
+      logsURL: ''
     };
   }
 
@@ -67,9 +69,17 @@ class ImportResources extends Component {
       gitcommit,
       repourl
     };
-    createPipelineRun(payload, namespace);
-    this.setState({
-      submitSuccess: true
+
+    createPipelineRun(payload, namespace).then(headers => {
+      const logsURL = headers.get('Content-Location');
+      const trimmedLogsURL = logsURL.substring(logsURL.lastIndexOf('/') + 1);
+      const finalURL = '#/pipelines/pipeline0/runs/'.concat(trimmedLogsURL);
+      this.setState({
+        logsURL: finalURL
+      });
+      this.setState({
+        submitSuccess: true
+      });
     });
     event.preventDefault();
   }
@@ -80,10 +90,12 @@ class ImportResources extends Component {
     this.handleSubmit = this.handleSubmit.bind(this);
 
     return (
-      <div>
-        <h1 className="ImportHeader">
-          Import Tekton resources from repository
-        </h1>
+      <div className="Outer">
+        <div className="row">
+          <h1 className="ImportHeader">
+            Import Tekton resources from repository
+          </h1>
+        </div>
         <div className="row">
           <div className="firstColumn">
             <FormLabel>
@@ -134,7 +146,7 @@ class ImportResources extends Component {
                 title="Triggered PipelineRun to apply Tekton resources"
                 subtitle=""
                 caption={
-                  <a href="#/pipelines/pipeline0/runs"> Pipeline0 logs </a>
+                  <a href={this.state.logsURL}> View logs for this run </a>
                 }
               />
             )}
