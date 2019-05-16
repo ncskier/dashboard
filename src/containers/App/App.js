@@ -39,7 +39,8 @@ import {
   PipelineRuns,
   Pipelines,
   Tasks,
-  TaskRuns
+  TaskRuns,
+  CreatePipelineRun
 } from '..';
 import Header from '../../components/Header';
 import Breadcrumbs from '../../components/Breadcrumbs';
@@ -116,6 +117,11 @@ export /* istanbul ignore next */ class App extends Component {
               <Route
                 path="/pipelines/:pipelineName/runs/:pipelineRunName"
                 component={PipelineRun}
+              />
+              <Route
+                path="/create-pipeline-run"
+                exact
+                component={CreatePipelineRun}
               />
               <Route path="/extensions" exact component={Extensions} />
               {extensions.map(({ displayName, name, source }) => (
