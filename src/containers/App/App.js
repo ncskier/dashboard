@@ -69,7 +69,7 @@ export /* istanbul ignore next */ class App extends Component {
           <Header>
             <Route path="*" component={Breadcrumbs} />
           </Header>
-          <SideNav isExpanded aria-label="Side navigation">
+          <SideNav defaultExpanded expanded aria-label="Side navigation">
             <SideNavHeader icon={<span />}>
               <SideNavDetails title="Namespace">
                 <SideNavSwitcher
@@ -84,6 +84,9 @@ export /* istanbul ignore next */ class App extends Component {
             <SideNavItems>
               <SideNavLink element={NavLink} icon={<span />} to="/pipelines">
                 Pipelines
+              </SideNavLink>
+              <SideNavLink element={NavLink} icon={<span />} to="/pipelineruns">
+                PipelineRuns
               </SideNavLink>
               <SideNavLink element={NavLink} icon={<span />} to="/tasks">
                 Tasks
@@ -115,6 +118,7 @@ export /* istanbul ignore next */ class App extends Component {
               />
               <Route path="/pipelines" exact component={Pipelines} />
               <Route path="/tasks" exact component={Tasks} />
+              <Route path="/pipelineruns" component={PipelineRuns} />
               <Route
                 path="/pipelines/:pipelineName/runs"
                 exact
