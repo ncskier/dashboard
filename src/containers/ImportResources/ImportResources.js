@@ -70,7 +70,8 @@ class ImportResources extends Component {
       repourl
     };
 
-    createPipelineRun(payload, namespace).then(headers => {
+    const promise = createPipelineRun(payload, namespace);
+    promise.then(headers => {
       const logsURL = headers.get('Content-Location');
       const trimmedLogsURL = logsURL.substring(logsURL.lastIndexOf('/') + 1);
       const finalURL = '#/pipelines/pipeline0/runs/'.concat(trimmedLogsURL);
@@ -80,6 +81,19 @@ class ImportResources extends Component {
       this.setState({
         submitSuccess: true
       });
+    });
+    promise.catch(error => {
+      const statusCode = error.response.status;
+      switch (statusCode) {
+        case 500:
+          this.setState({
+            submitSuccess: false
+          });
+          console.log(this.state.submitSuccess);
+          break;
+        default:
+          console.log(statusCode);
+      }
     });
     event.preventDefault();
   }
@@ -146,8 +160,16 @@ class ImportResources extends Component {
                 title="Triggered PipelineRun to apply Tekton resources"
                 subtitle=""
                 caption={
-                  <a href={this.state.logsURL}> View logs for this run </a>
+                  <a href={this.state.logsURL}> View status of this run </a>
                 }
+              />
+            )}
+            {!this.state.submitSuccess && (
+              <ToastNotification
+                kind="error"
+                title="Invalid data input"
+                subtitle=""
+                caption=""
               />
             )}
           </div>

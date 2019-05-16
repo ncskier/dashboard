@@ -91,15 +91,15 @@ export /* istanbul ignore next */ class App extends Component {
               <SideNavLink element={NavLink} icon={<span />} to="/tasks">
                 Tasks
               </SideNavLink>
-              <SideNavLink element={NavLink} icon={<span />} to="/extensions">
-                Extensions
-              </SideNavLink>
               <SideNavLink
                 element={NavLink}
                 icon={<span />}
                 to="/importresources"
               >
                 Import Tekton resources
+              </SideNavLink>
+              <SideNavLink element={NavLink} icon={<span />} to="/extensions">
+                Extensions
               </SideNavLink>
             </SideNavItems>
           </SideNav>
