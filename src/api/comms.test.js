@@ -39,6 +39,12 @@ describe('checkStatus', () => {
     expect(checkStatus({ ok: true, json })).toEqual(data);
   });
 
+  it('returns headers on successful create', () => {
+    const status = 201;
+    const headers = { fake: 'headers' };
+    expect(checkStatus({ status })).toEqual(headers);
+  });
+
   it('throws an error on failure', () => {
     const status = 400;
     expect(() => checkStatus({ status })).toThrow();

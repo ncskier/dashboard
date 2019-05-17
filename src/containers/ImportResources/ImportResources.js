@@ -37,6 +37,7 @@ class ImportResources extends Component {
       repositoryURL: '',
       serviceAccount: '',
       submitSuccess: false,
+      invalidInput: false,
       logsURL: ''
     };
   }
@@ -87,7 +88,8 @@ class ImportResources extends Component {
       switch (statusCode) {
         case 500:
           this.setState({
-            submitSuccess: false
+            submitSuccess: false,
+            invalidInput: true
           });
           console.log(this.state.submitSuccess);
           break;
@@ -146,6 +148,18 @@ class ImportResources extends Component {
         <div className="row">
           <div className="firstColumn"> </div>
           <div className="column">
+            {this.state.invalidInput && (
+              <ToastNotification
+                timeout="2000"
+                kind="error"
+                title="Invalid data input"
+              />
+            )}
+          </div>
+        </div>
+        <div className="row">
+          <div className="firstColumn"> </div>
+          <div className="column">
             <Button kind="primary" onClick={this.handleSubmit}>
               Import and Apply
             </Button>
@@ -156,20 +170,13 @@ class ImportResources extends Component {
           <div className="column">
             {this.state.submitSuccess && (
               <ToastNotification
+                timeout="2000"
                 kind="success"
                 title="Triggered PipelineRun to apply Tekton resources"
                 subtitle=""
                 caption={
                   <a href={this.state.logsURL}> View status of this run </a>
                 }
-              />
-            )}
-            {!this.state.submitSuccess && (
-              <ToastNotification
-                kind="error"
-                title="Invalid data input"
-                subtitle=""
-                caption=""
               />
             )}
           </div>
