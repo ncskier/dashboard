@@ -218,7 +218,7 @@ Returns HTTP code 404 if an error occurred getting the namespaces
 __Service Accounts__
 ```
 GET /v1/namespaces/<namespace>/serviceaccounts
-Get all ServiceAccounts for the cluster
+Get all ServiceAccounts
 Returns HTTP code 200 and a list of ServiceAccounts in the cluster
 Returns HTTP code 404 if an error occurred getting the ServiceAccounts
 ```
