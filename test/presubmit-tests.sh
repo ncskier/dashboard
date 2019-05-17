@@ -59,20 +59,33 @@ function get_node() {
   export PATH=$PATH:$(pwd)/node-v10.15.3-linux-x64/bin
 }
 
-function node_test() {
-  echo "Running node tests from $(pwd)"
+function node_npm_install() {
+  local failed=0
   mkdir ~/.npm-global
   npm config set prefix '~/.npm-global'
   export PATH=$PATH:$HOME/.npm-global/bin
-  npm ci # similar to `npm install` but ensures all versions from lock file
-  npm run test:ci
+  npm ci || failed=1 # similar to `npm install` but ensures all versions from lock file
+  return ${failed}
+}
+
+function node_test() {
+  local failed=0
+  echo "Running node tests from $(pwd)"
+  node_npm_install || failed=1
+  npm run test:ci || failed=1
   echo ""
+  return ${failed}
 }
 
 function pre_unit_tests() {
-  local failed=0
-  node_test || failed=1
-  return ${failed}
+  node_test
+}
+
+function pre_integration_tests() {
+    local failed=0
+    node_npm_install || failed=1
+    npm run build_ko || failed=1
+    return ${failed}
 }
 
 function extra_initialization() {

@@ -11,15 +11,18 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-header.bx--header {
-  flex-direction: column;
-  align-items: flex-start;
-  background-color: white;
-  height: 7rem;
-  padding: 1.5em;
+import React from 'react';
+import { settings } from 'carbon-components';
 
-  .banner {
-    height: 2.5em;
-    margin-bottom: 1em;
-  }
+import './SideNavMenu.scss';
+
+const { prefix } = settings;
+
+export default function SideNavMenu({ children, title }) {
+  return (
+    <li className="submenu-parent-item">
+      <span className="submenu-title">{title}</span>
+      <ul className={`${prefix}--side-nav__menu`}>{children}</ul>
+    </li>
+  );
 }

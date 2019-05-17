@@ -42,6 +42,12 @@ describe('checkStatus', () => {
   it('returns headers on successful create', () => {
     const status = 201;
     const headers = { fake: 'headers' };
+    expect(checkStatus({ ok: true, headers, status })).toEqual(headers);
+  });
+
+  it('returns headers on successful create', () => {
+    const status = 201;
+    const headers = { fake: 'headers' };
     expect(checkStatus({ status })).toEqual(headers);
   });
 

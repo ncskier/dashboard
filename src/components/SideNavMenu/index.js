@@ -11,15 +11,4 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-header.bx--header {
-  flex-direction: column;
-  align-items: flex-start;
-  background-color: white;
-  height: 7rem;
-  padding: 1.5em;
-
-  .banner {
-    height: 2.5em;
-    margin-bottom: 1em;
-  }
-}
+export { default } from './SideNavMenu';

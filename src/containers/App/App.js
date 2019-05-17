@@ -25,11 +25,8 @@ import {
 import {
   Content,
   SideNav,
-  SideNavDetails,
-  SideNavHeader,
   SideNavItems,
-  SideNavLink,
-  SideNavSwitcher
+  SideNavLink
 } from 'carbon-components-react/lib/components/UIShell';
 
 import {
@@ -42,6 +39,9 @@ import {
   Tasks,
   TaskRuns
 } from '..';
+
+import NamespacesDropdown from '../NamespacesDropdown';
+import SideNavMenu from '../../components/SideNavMenu';
 import Header from '../../components/Header';
 import Breadcrumbs from '../../components/Breadcrumbs';
 import { fetchExtensions } from '../../actions/extensions';
@@ -61,7 +61,7 @@ export /* istanbul ignore next */ class App extends Component {
   }
 
   render() {
-    const { extensions, namespace, namespaces } = this.props;
+    const { extensions, namespace } = this.props;
 
     return (
       <Router>
@@ -70,27 +70,22 @@ export /* istanbul ignore next */ class App extends Component {
             <Route path="*" component={Breadcrumbs} />
           </Header>
           <SideNav defaultExpanded expanded aria-label="Side navigation">
-            <SideNavHeader icon={<span />}>
-              <SideNavDetails title="Namespace">
-                <SideNavSwitcher
-                  labelText={namespace}
-                  onChange={event => {
-                    this.props.selectNamespace(event.target.value);
-                  }}
-                  options={namespaces}
-                />
-              </SideNavDetails>
-            </SideNavHeader>
             <SideNavItems>
-              <SideNavLink element={NavLink} icon={<span />} to="/pipelines">
-                Pipelines
-              </SideNavLink>
-              <SideNavLink element={NavLink} icon={<span />} to="/pipelineruns">
-                PipelineRuns
-              </SideNavLink>
-              <SideNavLink element={NavLink} icon={<span />} to="/tasks">
-                Tasks
-              </SideNavLink>
+              <SideNavMenu title="Tekton">
+                <SideNavLink element={NavLink} icon={<span />} to="/pipelines">
+                  Pipelines
+                </SideNavLink>
+                <SideNavLink
+                  element={NavLink}
+                  icon={<span />}
+                  to="/pipelineruns"
+                >
+                  PipelineRuns
+                </SideNavLink>
+                <SideNavLink element={NavLink} icon={<span />} to="/tasks">
+                  Tasks
+                </SideNavLink>
+              </SideNavMenu>
               <SideNavLink
                 element={NavLink}
                 icon={<span />}
@@ -98,9 +93,28 @@ export /* istanbul ignore next */ class App extends Component {
               >
                 Import Tekton resources
               </SideNavLink>
-              <SideNavLink element={NavLink} icon={<span />} to="/extensions">
-                Extensions
-              </SideNavLink>
+              <NamespacesDropdown
+                titleText="Namespace"
+                selectedItem={{ text: namespace }}
+                onChange={event => {
+                  this.props.selectNamespace(event.selectedItem.text);
+                }}
+              />
+              {extensions.length > 0 && (
+                <SideNavMenu title="Extensions">
+                  {extensions.map(({ displayName, name }) => (
+                    <SideNavLink
+                      element={NavLink}
+                      icon={<span />}
+                      to={`/extensions/${name}`}
+                      key={name}
+                      title={displayName}
+                    >
+                      {displayName}
+                    </SideNavLink>
+                  ))}
+                </SideNavMenu>
+              )}
             </SideNavItems>
           </SideNav>
 
