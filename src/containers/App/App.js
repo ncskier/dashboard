@@ -30,7 +30,6 @@ import {
 } from 'carbon-components-react/lib/components/UIShell';
 
 import {
-  ImportResources,
   Extension,
   Extensions,
   PipelineRun,
@@ -86,13 +85,6 @@ export /* istanbul ignore next */ class App extends Component {
                   Tasks
                 </SideNavLink>
               </SideNavMenu>
-              <SideNavLink
-                element={NavLink}
-                icon={<span />}
-                to="/importresources"
-              >
-                Import Tekton resources
-              </SideNavLink>
               <NamespacesDropdown
                 titleText="Namespace"
                 selectedItem={{ text: namespace }}
@@ -143,7 +135,6 @@ export /* istanbul ignore next */ class App extends Component {
                 path="/pipelines/:pipelineName/runs/:pipelineRunName"
                 component={PipelineRun}
               />
-              <Route path="/importresources" component={ImportResources} />
               <Route path="/extensions" exact component={Extensions} />
               {extensions.map(({ displayName, name, source }) => (
                 <Route

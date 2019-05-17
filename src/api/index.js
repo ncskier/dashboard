@@ -128,9 +128,9 @@ export function getTaskRunLog(name, namespace) {
   return get(uri);
 }
 
-export function createPipelineRun({ id, ...rest }, namespace) {
-  const uri = getAPI('pipelinerun', { namespace });
-  return post(uri, { id, ...rest });
+export function createPipelineRun(payload) {
+  const uri = `${apiRoot}/`;
+  return post(uri, payload);
 }
 
 export function getCredentials(namespace) {
