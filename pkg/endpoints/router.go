@@ -63,7 +63,7 @@ func (r Resource) RegisterEndpoints(container *restful.Container) {
 
 	wsv1.Route(wsv1.GET("/").To(r.getAllNamespaces))
 
-	wsv1.Route(wsv1.GET("/{namespace}/serviceaccount").To(r.getAllServiceAccounts))
+	wsv1.Route(wsv1.GET("/{namespace}/serviceaccounts").To(r.getAllServiceAccounts))
 
 	wsv1.Route(wsv1.GET("/{namespace}/pipeline").To(r.getAllPipelines))
 	wsv1.Route(wsv1.GET("/{namespace}/pipeline/{name}").To(r.getPipeline))

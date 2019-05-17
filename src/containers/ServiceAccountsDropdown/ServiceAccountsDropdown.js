@@ -15,12 +15,23 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Dropdown, DropdownSkeleton } from 'carbon-components-react';
 
-import { getServiceAccounts, isFetchingServiceAccounts } from '../../reducers';
+import {
+  getServiceAccounts,
+  isFetchingServiceAccounts,
+  getSelectedNamespace
+} from '../../reducers';
 import { fetchServiceAccounts } from '../../actions/serviceAccounts';
 
 class ServiceAccountsDropdown extends React.Component {
   componentDidMount() {
     this.props.fetchServiceAccounts();
+  }
+
+  componentDidUpdate(prevProps) {
+    const { namespace } = this.props;
+    if (namespace !== prevProps.namespace) {
+      this.props.fetchServiceAccounts();
+    }
   }
 
   render() {
@@ -41,7 +52,8 @@ ServiceAccountsDropdown.defaultProps = {
 function mapStateToProps(state) {
   return {
     items: getServiceAccounts(state).map(sa => sa.metadata.name),
-    loading: isFetchingServiceAccounts(state)
+    loading: isFetchingServiceAccounts(state),
+    namespace: getSelectedNamespace(state)
   };
 }
 

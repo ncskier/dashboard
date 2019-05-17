@@ -169,6 +169,6 @@ export function getNamespaces() {
 }
 
 export function getServiceAccounts(namespace) {
-  const uri = getAPI('serviceaccount', { namespace });
+  const uri = getAPI('serviceaccounts', { namespace });
   return get(uri).then(checkData);
 }
