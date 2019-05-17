@@ -18,16 +18,8 @@ import * as API from '../api';
 import * as selectors from '../reducers';
 import {
   fetchServiceAccounts,
-  fetchServiceAccountsSuccess,
-  selectServiceAccount
+  fetchServiceAccountsSuccess
 } from './serviceAccounts';
-
-it('selectServiceAccount', () => {
-  const serviceAccount = 'serviceAccount';
-  expect(selectServiceAccount(serviceAccount)).toMatchObject({
-    serviceAccount
-  });
-});
 
 it('fetchServiceAccountsSuccess', () => {
   const data = { fake: 'data' };
@@ -38,7 +30,6 @@ it('fetchServiceAccountsSuccess', () => {
 });
 
 it('fetchServiceAccounts', async () => {
-  const serviceAccount = 'default';
   const namespace = 'default';
   const serviceAccounts = { fake: 'serviceAccounts' };
   const middleware = [thunk];
@@ -46,16 +37,18 @@ it('fetchServiceAccounts', async () => {
   const store = mockStore();
 
   jest
-    .spyOn(selectors, 'getSelectedServiceAccount')
-    .mockImplementation(() => serviceAccount);
-  jest.spyOn(API, 'getServiceAccounts').mockImplementation(() => serviceAccounts);
+    .spyOn(selectors, 'getSelectedNamespace')
+    .mockImplementation(() => namespace);
+  jest
+    .spyOn(API, 'getServiceAccounts')
+    .mockImplementation(() => serviceAccounts);
 
   const expectedActions = [
     { type: 'SERVICE_ACCOUNTS_FETCH_REQUEST' },
-    fetchServiceAccountsSuccess(serviceAccounts, serviceAccount)
+    fetchServiceAccountsSuccess(serviceAccounts, namespace)
   ];
 
-  await store.dispatch(fetchServiceAccounts(namespace));
+  await store.dispatch(fetchServiceAccounts());
   expect(store.getActions()).toEqual(expectedActions);
 });
 

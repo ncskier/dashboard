@@ -17,25 +17,26 @@ import keyBy from 'lodash.keyby';
 function byId(state = {}, action) {
   switch (action.type) {
     case 'SERVICE_ACCOUNTS_FETCH_SUCCESS':
-      return keyBy(action.data, 'metadata.uid');
+      return { ...state, ...keyBy(action.data, 'metadata.uid') };
     default:
       return state;
   }
 }
 
-function byName(state = {}, action) {
+function byNamespace(state = {}, action) {
   switch (action.type) {
     case 'SERVICE_ACCOUNTS_FETCH_SUCCESS':
-      return keyBy(action.data, 'metadata.name');
-    default:
-      return state;
-  }
-}
+      const { namespace } = action;
+      const serviceAccounts = state[namespace] || {};
+      action.data.forEach(pipelineRun => {
+        const { name, uid } = pipelineRun.metadata;
+        serviceAccounts[name] = uid;
+      });
 
-function selected(state = 'default', action) {
-  switch (action.type) {
-    case 'SERVICE_ACCOUNTS_SELECT':
-      return action.serviceAccount;
+      return {
+        ...state,
+        [namespace]: serviceAccounts
+      };
     default:
       return state;
   }
@@ -67,18 +68,16 @@ function errorMessage(state = null, action) {
 
 export default combineReducers({
   byId,
-  byName,
+  byNamespace,
   errorMessage,
-  isFetching,
-  selected
+  isFetching
 });
 
-export function getServiceAccounts(state) {
-  return Object.keys(state.byName);
-}
-
-export function getSelectedServiceAccount(state) {
-  return state.selected;
+export function getServiceAccounts(state, namespace) {
+  const serviceAccounts = state.byNamespace[namespace];
+  return serviceAccounts
+    ? Object.values(serviceAccounts).map(id => state.byId[id])
+    : [];
 }
 
 export function getServiceAccountsErrorMessage(state) {

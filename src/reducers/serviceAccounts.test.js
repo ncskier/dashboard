@@ -14,14 +14,14 @@ limitations under the License.
 import serviceAccountsReducer, * as selectors from './serviceAccounts';
 
 it('handles init or unknown actions', () => {
-  expect(serviceAccountsReducer(undefined, { type: 'does_not_exist' })).toEqual({
-    byName: {
-      default: {}
-    },
-    errorMessage: null,
-    isFetching: false,
-    selected: 'default'
-  });
+  expect(serviceAccountsReducer(undefined, { type: 'does_not_exist' })).toEqual(
+    {
+      byId: {},
+      byNamespace: {},
+      errorMessage: null,
+      isFetching: false
+    }
+  );
 });
 
 it('SERVICE_ACCOUNTS_FETCH_REQUEST', () => {
@@ -31,22 +31,27 @@ it('SERVICE_ACCOUNTS_FETCH_REQUEST', () => {
 });
 
 it('SERVICE_ACCOUNTS_FETCH_SUCCESS', () => {
-  const name = 'default';
+  const name = 'service-account-name';
+  const namespace = 'default';
   const uid = 'some-uid';
   const serviceAccount = {
     metadata: {
       name,
+      namespace,
       uid
     },
     other: 'content'
   };
   const action = {
     type: 'SERVICE_ACCOUNTS_FETCH_SUCCESS',
-    data: [serviceAccount]
+    data: [serviceAccount],
+    namespace
   };
 
   const state = serviceAccountsReducer({}, action);
-  expect(selectors.getServiceAccounts(state)).toEqual([name]);
+  expect(selectors.getServiceAccounts(state, namespace)).toEqual([
+    serviceAccount
+  ]);
   expect(selectors.isFetchingServiceAccounts(state)).toBe(false);
 });
 
@@ -62,13 +67,8 @@ it('SERVICE_ACCOUNTS_FETCH_FAILURE', () => {
   expect(selectors.getServiceAccountsErrorMessage(state)).toEqual(message);
 });
 
-it('SERVICE_ACCOUNT_SELECT', () => {
-  const serviceAccount = 'some-serviceAccount';
-  const action = {
-    type: 'SERVICE_ACCOUNT_SELECT',
-    serviceAccount
-  };
-
-  const state = serviceAccountsReducer({}, action);
-  expect(selectors.getSelectedServiceAccount(state)).toEqual(serviceAccount);
+it('getServiceAccounts', () => {
+  const namespace = 'default';
+  const state = { byNamespace: {} };
+  expect(selectors.getServiceAccounts(state, namespace)).toEqual([]);
 });

@@ -18,7 +18,7 @@ import { Dropdown, DropdownSkeleton } from 'carbon-components-react';
 import { getServiceAccounts, isFetchingServiceAccounts } from '../../reducers';
 import { fetchServiceAccounts } from '../../actions/serviceAccounts';
 
-export class ServiceAccountsDropdown extends React.Component {
+class ServiceAccountsDropdown extends React.Component {
   componentDidMount() {
     this.props.fetchServiceAccounts();
   }
@@ -34,12 +34,13 @@ export class ServiceAccountsDropdown extends React.Component {
 
 ServiceAccountsDropdown.defaultProps = {
   items: [],
-  loading: true
+  loading: true,
+  label: 'Select ServiceAccount'
 };
 
 function mapStateToProps(state) {
   return {
-    items: getServiceAccounts(state),
+    items: getServiceAccounts(state).map(sa => sa.metadata.name),
     loading: isFetchingServiceAccounts(state)
   };
 }

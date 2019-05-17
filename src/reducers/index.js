@@ -39,23 +39,13 @@ export function getNamespaces(state) {
   return namespaceSelectors.getNamespaces(state.namespaces);
 }
 
-export function getSelectedServiceAccount(state) {
-  return serviceAccountSelectors.getSelectedServiceAccount(
-    state.serviceAccounts
-  );
-}
-
-export function getServiceAccounts(state) {
-  const namespace = getSelectedNamespace(state);
+export function getServiceAccounts(
+  state,
+  { namespace = getSelectedNamespace(state) } = {}
+) {
   return serviceAccountSelectors.getServiceAccounts(
     state.serviceAccounts,
     namespace
-  );
-}
-
-export function getServiceAccountsErrorMessage(state) {
-  return serviceAccountSelectors.getServiceAccountsErrorMessage(
-    state.serviceAccounts
   );
 }
 

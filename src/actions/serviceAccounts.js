@@ -14,17 +14,11 @@ limitations under the License.
 import { getServiceAccounts } from '../api';
 import { getSelectedNamespace } from '../reducers';
 
-export function selectServiceAccount(serviceAccount) {
-  return {
-    type: 'SERVICE_ACCOUNT_SELECT',
-    serviceAccount
-  };
-}
-
-export function fetchServiceAccountsSuccess(data) {
+export function fetchServiceAccountsSuccess(data, namespace) {
   return {
     type: 'SERVICE_ACCOUNTS_FETCH_SUCCESS',
-    data
+    data,
+    namespace
   };
 }
 

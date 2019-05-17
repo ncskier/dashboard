@@ -46,7 +46,8 @@ const NamespacesDropdown = ({ items, loading, ...dropdownProps }) => {
 
 NamespacesDropdown.defaultProps = {
   items: [],
-  loading: true
+  loading: true,
+  label: 'Select Namespace'
 };
 
 function mapStateToProps(state) {
