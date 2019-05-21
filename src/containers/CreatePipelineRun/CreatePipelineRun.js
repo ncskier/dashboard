@@ -24,7 +24,7 @@ import { PipelinesDropdown, ServiceAccountsDropdown } from '..';
 import {
   getPipelineRunsErrorMessage,
   isFetchingPipelineRuns,
-  getPipelines,
+  getPipelines
 } from '../../reducers';
 import { createPipelineRunAction } from '../../actions/pipelineRuns';
 import { fetchPipelines } from '../../actions/pipelines';
