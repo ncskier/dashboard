@@ -92,6 +92,39 @@ it('ServiceAccountsDropdown renders items based on Redux state', () => {
       selected: 'default'
     }
   });
+  const { getByText, queryByText } = render(
+    <Provider store={store}>
+      <ServiceAccountsDropdown {...props} />
+    </Provider>
+  );
+  fireEvent.click(getByText(initialTextRegExp));
+  Object.keys(serviceAccountsByNamespace.default).forEach(item => {
+    const re = new RegExp(item, 'i');
+    expect(queryByText(re)).toBeTruthy();
+  });
+  fireEvent.click(getByText(/service-account-1/i));
+  Object.keys(serviceAccountsByNamespace.default).forEach(item => {
+    if (item !== 'service-account-1') {
+      const re = new RegExp(item, 'i');
+      expect(queryByText(re)).toBeFalsy();
+    }
+  });
+  expect(queryByText(/service-account-1/i)).toBeTruthy();
+  expect(queryByText(initialTextRegExp)).toBeFalsy();
+});
+
+it('ServiceAccountsDropdown renders items based on Redux state when namespace changes', () => {
+  const store = mockStore({
+    serviceAccounts: {
+      byId: serviceAccountsById,
+      byNamespace: serviceAccountsByNamespace,
+      isFetching: false
+    },
+    namespaces: {
+      byName: namespacesByName,
+      selected: 'default'
+    }
+  });
   const { container, getByText, queryByText } = render(
     <Provider store={store}>
       <ServiceAccountsDropdown {...props} />
@@ -102,9 +135,12 @@ it('ServiceAccountsDropdown renders items based on Redux state', () => {
     const re = new RegExp(item, 'i');
     expect(queryByText(re)).toBeTruthy();
   });
-  fireEvent.click(getByText(initialTextRegExp));
+  fireEvent.click(getByText('service-account-1'));
+  expect(queryByText(/service-account-1/i)).toBeTruthy();
+  expect(queryByText(initialTextRegExp)).toBeFalsy();
 
   // Change selected namespace to verify the ServiceAccounts Dropdown updates items accordingly
+  // selected item 'service-account-1' should be reset to ''
   const newStore = mockStore({
     serviceAccounts: {
       byId: serviceAccountsById,
@@ -131,35 +167,8 @@ it('ServiceAccountsDropdown renders items based on Redux state', () => {
     const re = new RegExp(item, 'i');
     expect(queryByText(re)).toBeFalsy();
   });
-  fireEvent.click(getByText(initialTextRegExp));
-});
-
-it('ServiceAccountsDropdown renders the selected service account', () => {
-  const store = mockStore({
-    serviceAccounts: {
-      byId: serviceAccountsById,
-      byNamespace: serviceAccountsByNamespace,
-      isFetching: false
-    },
-    namespaces: {
-      byName: namespacesByName,
-      selected: 'default'
-    }
-  });
-  const { getByText, queryByText } = render(
-    <Provider store={store}>
-      <ServiceAccountsDropdown {...props} />
-    </Provider>
-  );
-  fireEvent.click(getByText(initialTextRegExp));
-  fireEvent.click(getByText(/default/i));
-  Object.keys(serviceAccountsByNamespace.default).forEach(item => {
-    if (item !== 'default') {
-      const re = new RegExp(item, 'i');
-      expect(queryByText(re)).toBeFalsy();
-    }
-  });
-  expect(queryByText(/default/i)).toBeTruthy();
+  fireEvent.click(getByText('service-account-3'));
+  expect(queryByText(/service-account-3/i)).toBeTruthy();
   expect(queryByText(initialTextRegExp)).toBeFalsy();
 });
 
@@ -175,7 +184,6 @@ it('ServiceAccountsDropdown renders loading skeleton based on Redux state', () =
       selected: 'default'
     }
   });
-
   const { queryByText } = render(
     <Provider store={store}>
       <ServiceAccountsDropdown {...props} fetchServiceAccounts={() => {}} />
@@ -205,4 +213,65 @@ it('ServiceAccountsDropdown handles onChange event', () => {
   fireEvent.click(getByText(initialTextRegExp));
   fireEvent.click(getByText(/default/i));
   expect(onChange).toHaveBeenCalledTimes(1);
+});
+
+it('ServiceAccountsDropdown handles onChange event when namespace changes', () => {
+  const storeDefaultNamespace = mockStore({
+    serviceAccounts: {
+      byId: serviceAccountsById,
+      byNamespace: serviceAccountsByNamespace,
+      isFetching: false
+    },
+    namespaces: {
+      byName: namespacesByName,
+      selected: 'default'
+    }
+  });
+  const onChange = jest.fn();
+  const { container, getByText } = render(
+    <Provider store={storeDefaultNamespace}>
+      <ServiceAccountsDropdown {...props} onChange={onChange} />
+    </Provider>
+  );
+  fireEvent.click(getByText(initialTextRegExp));
+  fireEvent.click(getByText(/default/i));
+
+  // Should call onChange because selected item was 'default' and now it will be reset to ''
+  const storeGreenNamespace = mockStore({
+    serviceAccounts: {
+      byId: serviceAccountsById,
+      byNamespace: serviceAccountsByNamespace,
+      isFetching: false
+    },
+    namespaces: {
+      byName: namespacesByName,
+      selected: 'green'
+    }
+  });
+  render(
+    <Provider store={storeGreenNamespace}>
+      <ServiceAccountsDropdown {...props} onChange={onChange} />
+    </Provider>,
+    { container }
+  );
+
+  // Should not call onChange because selected item was '' and now it will be reset to ''
+  const storeBlueNamespace = mockStore({
+    serviceAccounts: {
+      byId: serviceAccountsById,
+      byNamespace: serviceAccountsByNamespace,
+      isFetching: false
+    },
+    namespaces: {
+      byName: namespacesByName,
+      selected: 'blue'
+    }
+  });
+  render(
+    <Provider store={storeBlueNamespace}>
+      <ServiceAccountsDropdown {...props} onChange={onChange} />
+    </Provider>,
+    { container }
+  );
+  expect(onChange).toHaveBeenCalledTimes(2);
 });
