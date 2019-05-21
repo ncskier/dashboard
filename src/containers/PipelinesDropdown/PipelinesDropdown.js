@@ -13,7 +13,6 @@ limitations under the License.
 
 import React from 'react';
 import { connect } from 'react-redux';
-import { Dropdown, DropdownSkeleton } from 'carbon-components-react';
 
 import {
   getPipelines,
@@ -21,18 +20,7 @@ import {
   getSelectedNamespace
 } from '../../reducers';
 import { fetchPipelines } from '../../actions/pipelines';
-
-const itemToElement = ({ text }) => {
-  return (
-    <div key={text} title={text}>
-      {text}
-    </div>
-  );
-};
-
-const itemToString = ({ text }) => text;
-
-const itemStringToObject = text => ({ text });
+import TooltipDropdown from '../../components/TooltipDropdown';
 
 class PipelinesDropdown extends React.Component {
   constructor(props) {
@@ -77,17 +65,9 @@ class PipelinesDropdown extends React.Component {
   }
 
   render() {
-    const { items, loading, ...dropdownProps } = this.props;
-    if (loading) {
-      return <DropdownSkeleton {...dropdownProps} />;
-    }
-    const options = items.map(itemStringToObject);
     return (
-      <Dropdown
-        {...dropdownProps}
-        itemToElement={itemToElement}
-        items={options}
-        itemToString={itemToString}
+      <TooltipDropdown
+        {...this.props}
         selectedItem={this.state.selectedItem}
         onChange={this.onChange}
       />
