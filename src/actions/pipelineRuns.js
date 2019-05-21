@@ -11,7 +11,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { getPipelineRun, getPipelineRuns } from '../api';
+import { getPipelineRun, getPipelineRuns, createPipelineRun } from '../api';
 import { getSelectedNamespace } from '../reducers';
 
 export function fetchPipelineRunsSuccess(data) {
@@ -48,5 +48,22 @@ export function fetchPipelineRuns({ pipelineName, namespace } = {}) {
       dispatch({ type: 'PIPELINE_RUNS_FETCH_FAILURE', error });
     }
     return pipelineRuns;
+  };
+}
+
+export function createPipelineRunAction({ payload, namespace }) {
+  return async (dispatch, getState) => {
+    dispatch({ type: 'PIPELINE_RUNS_FETCH_REQUEST' });
+    try {
+      const requestedNamespace = namespace || getSelectedNamespace(getState());
+      await createPipelineRun(payload, requestedNamespace);
+      const pipelineRuns = await getPipelineRuns(
+        requestedNamespace,
+        payload.pipeline
+      );
+      dispatch(fetchPipelineRunsSuccess(pipelineRuns));
+    } catch (error) {
+      dispatch({ type: 'PIPELINE_RUNS_FETCH_FAILURE', error });
+    }
   };
 }

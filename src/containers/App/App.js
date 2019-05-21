@@ -37,6 +37,7 @@ import {
   Pipelines,
   Tasks,
   TaskRuns,
+  CreatePipelineRun,
   NamespacesDropdown
 } from '..';
 
@@ -134,6 +135,11 @@ export /* istanbul ignore next */ class App extends Component {
               <Route
                 path="/pipelines/:pipelineName/runs/:pipelineRunName"
                 component={PipelineRun}
+              />
+              <Route
+                path="/create-pipeline-run"
+                exact
+                component={CreatePipelineRun}
               />
               <Route path="/extensions" exact component={Extensions} />
               {extensions.map(({ displayName, name, source }) => (
