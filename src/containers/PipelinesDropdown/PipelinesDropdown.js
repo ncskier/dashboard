@@ -35,6 +35,16 @@ const itemToString = ({ text }) => text;
 const itemStringToObject = text => ({ text });
 
 class PipelinesDropdown extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      selectedItem: ''
+    };
+
+    this.onChange = this.onChange.bind(this);
+    this.resetSelectedItem = this.resetSelectedItem.bind(this);
+  }
+
   componentDidMount() {
     this.props.fetchPipelines();
   }
@@ -43,12 +53,31 @@ class PipelinesDropdown extends React.Component {
     const { namespace } = this.props;
     if (namespace !== prevProps.namespace) {
       this.props.fetchPipelines();
+      this.resetSelectedItem();
+    }
+  }
+
+  onChange({ selectedItem }) {
+    this.setState({
+      selectedItem
+    });
+    if (this.props.onChange) {
+      this.props.onChange({ selectedItem });
+    }
+  }
+
+  resetSelectedItem() {
+    const prevSelectedItem = this.state.selectedItem;
+    this.setState({
+      selectedItem: ''
+    });
+    if (prevSelectedItem !== '' && this.props.onChange) {
+      this.props.onChange({ selectedItem: '' });
     }
   }
 
   render() {
     const { items, loading, ...dropdownProps } = this.props;
-
     if (loading) {
       return <DropdownSkeleton {...dropdownProps} />;
     }
@@ -59,6 +88,8 @@ class PipelinesDropdown extends React.Component {
         itemToElement={itemToElement}
         items={options}
         itemToString={itemToString}
+        selectedItem={this.state.selectedItem}
+        onChange={this.onChange}
       />
     );
   }
