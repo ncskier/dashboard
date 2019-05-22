@@ -43,7 +43,7 @@ const TooltipDropdown = ({ items, loading, ...dropdownProps }) => {
 
 TooltipDropdown.defaultProps = {
   items: [],
-  loading: true
+  loading: false
 };
 
 export default TooltipDropdown;

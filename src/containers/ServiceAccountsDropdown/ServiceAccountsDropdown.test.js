@@ -115,6 +115,29 @@ it('ServiceAccountsDropdown renders items based on Redux state', () => {
   expect(queryByText(initialTextRegExp)).toBeFalsy();
 });
 
+it('ServiceAccountsDropdown renders selected item', () => {
+  const store = mockStore({
+    serviceAccounts: {
+      byId: serviceAccountsById,
+      byNamespace: serviceAccountsByNamespace,
+      isFetching: false
+    },
+    namespaces: {
+      byName: namespacesByName,
+      selected: 'default'
+    }
+  });
+  const { queryByText } = render(
+    <Provider store={store}>
+      <ServiceAccountsDropdown
+        {...props}
+        selectedItem={{ text: 'service-account-1' }}
+      />
+    </Provider>
+  );
+  expect(queryByText(/service-account-1/i)).toBeTruthy();
+});
+
 it('ServiceAccountsDropdown renders items based on Redux state when namespace changes', () => {
   const store = mockStore({
     serviceAccounts: {

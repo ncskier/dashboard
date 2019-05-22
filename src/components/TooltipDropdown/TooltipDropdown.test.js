@@ -35,6 +35,13 @@ it('TooltipDropdown renders', () => {
   expect(queryByText(/select an item/i)).toBeFalsy();
 });
 
+it('TooltipDropdown renders selected item', () => {
+  const { queryByText } = render(
+    <TooltipDropdown {...props} selectedItem={{ text: 'item 1' }} />
+  );
+  expect(queryByText(/item 1/i)).toBeTruthy();
+});
+
 it('TooltipDropdown renders loading skeleton', () => {
   const { queryByText } = render(<TooltipDropdown {...props} loading />);
   expect(queryByText(/select an item/i)).toBeFalsy();
