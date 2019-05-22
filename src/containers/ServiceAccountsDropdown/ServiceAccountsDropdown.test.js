@@ -76,9 +76,11 @@ const initialTextRegExp = new RegExp('select serviceaccount', 'i');
 const middleware = [thunk];
 const mockStore = configureStore(middleware);
 
-jest
-  .spyOn(API, 'getServiceAccounts')
-  .mockImplementation(() => serviceAccountsById);
+beforeEach(() => {
+  jest
+    .spyOn(API, 'getServiceAccounts')
+    .mockImplementation(() => serviceAccountsById);
+});
 
 it('ServiceAccountsDropdown renders items based on Redux state', () => {
   const store = mockStore({

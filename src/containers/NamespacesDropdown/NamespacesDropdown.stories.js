@@ -21,6 +21,7 @@ import thunk from 'redux-thunk';
 import NamespacesDropdown from './NamespacesDropdown';
 
 const props = {
+  id: 'namespaces dropdown',
   onChange: action('onChange')
 };
 
