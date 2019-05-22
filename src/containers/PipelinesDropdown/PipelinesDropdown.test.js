@@ -103,6 +103,26 @@ it('PipelinesDropdown renders items based on Redux state', () => {
   expect(queryByText(initialTextRegExp)).toBeFalsy();
 });
 
+it('PipelinesDropdown renders selected item', () => {
+  const store = mockStore({
+    pipelines: {
+      byId: pipelinesById,
+      byNamespace: pipelinesByNamespace,
+      isFetching: false
+    },
+    namespaces: {
+      byName: namespacesByName,
+      selected: 'default'
+    }
+  });
+  const { queryByText } = render(
+    <Provider store={store}>
+      <PipelinesDropdown {...props} selectedItem={{ text: 'pipeline-1' }} />
+    </Provider>
+  );
+  expect(queryByText(/pipeline-1/i)).toBeTruthy();
+});
+
 it('PipelinesDropdown renders items based on Redux state when namespace changes', () => {
   const store = mockStore({
     pipelines: {
