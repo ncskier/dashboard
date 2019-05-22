@@ -21,8 +21,10 @@ import {
   StructuredListHead,
   StructuredListRow,
   StructuredListSkeleton,
-  StructuredListWrapper
+  StructuredListWrapper,
+  Button
 } from 'carbon-components-react';
+import Add from '@carbon/icons-react/lib/add/16';
 
 import { getStatusIcon, getStatus } from '../../utils';
 import { fetchPipelineRuns } from '../../actions/pipelineRuns';
@@ -63,6 +65,16 @@ export /* istanbul ignore next */ class PipelineRuns extends Component {
 
     return (
       <>
+        {/* <Link to="/create-pipeline-run" style={{ 'text-decoration': 'none' }}> */}
+        <Button
+          href="#/create-pipeline-run"
+          iconDescription="Button icon"
+          renderIcon={Add}
+          // style={{ float: 'right' }}
+        >
+          Create PipelineRun
+        </Button>
+        {/* </Link> */}
         {(() => {
           if (loading) {
             return <StructuredListSkeleton border />;

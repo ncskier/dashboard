@@ -85,7 +85,7 @@ export function cancelPipelineRun(name, namespace) {
 }
 
 export function createPipelineRun(payload, namespace) {
-  const uri = getAPI('pipelinerun', { namespace });
+  const uri = getAPI('pipelineruns', { namespace });
   return post(uri, payload);
 }
 
