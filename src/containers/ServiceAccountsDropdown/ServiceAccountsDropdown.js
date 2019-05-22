@@ -26,7 +26,7 @@ class ServiceAccountsDropdown extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      selectedItem: this.props.selectedItem || ''
+      selectedItem: props.selectedItem || ''
     };
 
     this.onChange = this.onChange.bind(this);

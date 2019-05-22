@@ -34,8 +34,11 @@ import { fetchPipelines } from '../../actions/pipelines';
 class CreatePipelineRun extends React.Component {
   constructor(props) {
     super(props);
+
+    const { match } = this.props;
+    const { pipelineName } = match.params;
     this.state = {
-      pipeline: '',
+      pipeline: pipelineName || '',
       serviceAccount: '',
       gitName: '',
       gitRevision: '',
@@ -104,8 +107,10 @@ class CreatePipelineRun extends React.Component {
   }
 
   render() {
+    const { match, errorMessage } = this.props;
+    const { pipelineName } = match.params;
+
     let errorNotification;
-    const { errorMessage } = this.props;
     if (errorMessage) {
       errorNotification = (
         <InlineNotification
@@ -120,16 +125,28 @@ class CreatePipelineRun extends React.Component {
       <>
         {errorNotification}
         <Form>
-          <PipelinesDropdown
-            id="dropdown-pipeline"
-            label="Pipeline"
-            selectedItem={this.state.pipeline}
-            onChange={this.onPipelineChange}
-          />
+          {(() => {
+            const disabled = !!pipelineName;
+            return (
+              <PipelinesDropdown
+                id="dropdown-pipeline"
+                selectedItem={
+                  this.state.pipeline !== ''
+                    ? { text: this.state.pipeline }
+                    : ''
+                }
+                onChange={this.onPipelineChange}
+                disabled={disabled}
+              />
+            );
+          })()}
           <ServiceAccountsDropdown
             id="dropdown-service-account"
-            label="Service Account"
-            selectedItem={this.state.serviceAccount}
+            selectedItem={
+              this.state.serviceAccount !== ''
+                ? { text: this.state.serviceAccount }
+                : ''
+            }
             onChange={this.onServiceAccountChange}
           />
 

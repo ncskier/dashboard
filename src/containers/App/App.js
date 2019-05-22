@@ -136,8 +136,9 @@ export /* istanbul ignore next */ class App extends Component {
                 path="/pipelines/:pipelineName/runs/:pipelineRunName"
                 component={PipelineRun}
               />
+              <Route path="/create-pipelinerun" component={CreatePipelineRun} />
               <Route
-                path="/create-pipeline-run"
+                path="/pipelines/:pipelineName/create-pipelinerun"
                 exact
                 component={CreatePipelineRun}
               />

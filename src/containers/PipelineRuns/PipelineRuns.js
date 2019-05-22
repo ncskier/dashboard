@@ -65,16 +65,27 @@ export /* istanbul ignore next */ class PipelineRuns extends Component {
 
     return (
       <>
-        {/* <Link to="/create-pipeline-run" style={{ 'text-decoration': 'none' }}> */}
-        <Button
-          href="#/create-pipeline-run"
-          iconDescription="Button icon"
-          renderIcon={Add}
-          // style={{ float: 'right' }}
-        >
-          Create PipelineRun
-        </Button>
-        {/* </Link> */}
+        {(() => {
+          const href = pipelineName
+            ? `#/pipelines/${pipelineName}/create-pipelinerun`
+            : '#/create-pipelinerun';
+
+          return (
+            // <Link
+            //   to="/create-pipelinerun"
+            //   style={{ 'text-decoration': 'none' }}
+            // >
+            <Button
+              href={href}
+              iconDescription="Button icon"
+              renderIcon={Add}
+              // style={{ float: 'right' }}
+            >
+              Create PipelineRun
+            </Button>
+            // </Link>
+          );
+        })()}
         {(() => {
           if (loading) {
             return <StructuredListSkeleton border />;
@@ -174,7 +185,7 @@ function mapStateToProps(state, props) {
     namespace: getSelectedNamespace(state),
     pipelineRuns: pipelineName
       ? getPipelineRunsByPipelineName(state, {
-          name: props.match.params.pipelineName
+          name: pipelineName
         })
       : getPipelineRuns(state)
   };
