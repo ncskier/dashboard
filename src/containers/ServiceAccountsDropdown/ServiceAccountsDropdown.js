@@ -78,7 +78,8 @@ class ServiceAccountsDropdown extends React.Component {
 ServiceAccountsDropdown.defaultProps = {
   items: [],
   loading: true,
-  label: 'Select ServiceAccount'
+  label: 'Select ServiceAccount',
+  titleText: 'Service Account'
 };
 
 function mapStateToProps(state) {

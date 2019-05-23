@@ -68,5 +68,11 @@ main {
 
   .bx--content {
     margin-top: 7rem;
+    min-height: calc(100vh - 7rem);
   }
+
+  // .bx--modal--content {
+  //   height: calc(100vh - 7rem);
+  //   overflow: hidden;
+  // }
 }

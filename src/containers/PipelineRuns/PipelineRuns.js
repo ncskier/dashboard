@@ -36,8 +36,24 @@ import {
   getSelectedNamespace,
   isFetchingPipelineRuns
 } from '../../reducers';
+import { CreatePipelineRun } from '..';
 
 export /* istanbul ignore next */ class PipelineRuns extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      showCreatePipelineRunModal: false
+    };
+
+    this.showCreatePipelineRunModal = this.showCreatePipelineRunModal.bind(
+      this
+    );
+    this.hideCreatePipelineRunModal = this.hideCreatePipelineRunModal.bind(
+      this
+    );
+  }
+
   componentDidMount() {
     this.fetchPipelineRuns();
   }
@@ -59,33 +75,37 @@ export /* istanbul ignore next */ class PipelineRuns extends Component {
     this.props.fetchPipelineRuns({ pipelineName });
   }
 
+  showCreatePipelineRunModal() {
+    this.setState({
+      showCreatePipelineRunModal: true
+    });
+  }
+
+  hideCreatePipelineRunModal() {
+    this.setState({
+      showCreatePipelineRunModal: false
+    });
+  }
+
   render() {
     const { match, error, loading, pipelineRuns } = this.props;
     const { pipelineName } = match.params;
 
     return (
       <>
-        {(() => {
-          const href = pipelineName
-            ? `#/pipelines/${pipelineName}/create-pipelinerun`
-            : '#/create-pipelinerun';
-
-          return (
-            // <Link
-            //   to="/create-pipelinerun"
-            //   style={{ 'text-decoration': 'none' }}
-            // >
-            <Button
-              href={href}
-              iconDescription="Button icon"
-              renderIcon={Add}
-              // style={{ float: 'right' }}
-            >
-              Create PipelineRun
-            </Button>
-            // </Link>
-          );
-        })()}
+        <Button
+          iconDescription="Button icon"
+          renderIcon={Add}
+          onClick={this.showCreatePipelineRunModal}
+          // style={{ float: 'right' }}
+        >
+          Create PipelineRun
+        </Button>
+        <CreatePipelineRun
+          open={this.state.showCreatePipelineRunModal}
+          onRequestClose={this.hideCreatePipelineRunModal}
+          pipelineName={pipelineName}
+        />
         {(() => {
           if (loading) {
             return <StructuredListSkeleton border />;

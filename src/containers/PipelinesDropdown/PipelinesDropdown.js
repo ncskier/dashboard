@@ -78,7 +78,8 @@ class PipelinesDropdown extends React.Component {
 PipelinesDropdown.defaultProps = {
   items: [],
   loading: true,
-  label: 'Select Pipeline'
+  label: 'Select Pipeline',
+  titleText: 'Pipeline'
 };
 
 function mapStateToProps(state) {
