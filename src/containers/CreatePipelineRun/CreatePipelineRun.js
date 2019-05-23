@@ -17,7 +17,6 @@ import {
   Form,
   Button,
   FormGroup,
-  TextInput,
   InlineNotification
 } from 'carbon-components-react';
 import { PipelinesDropdown, ServiceAccountsDropdown } from '..';
@@ -28,6 +27,9 @@ import {
 } from '../../reducers';
 import { createPipelineRunAction } from '../../actions/pipelineRuns';
 import { fetchPipelines } from '../../actions/pipelines';
+import ResourceNameTextInput from '../../components/ResourceNameTextInput';
+import UrlTextInput from '../../components/UrlTextInput';
+import NoSpacesTextInput from '../../components/NoSpacesTextInput';
 
 // const secrets = ['default', 'git-secret', 'docker-secret', 'helm-secret'];
 
@@ -79,6 +81,7 @@ class CreatePipelineRun extends React.Component {
   }
 
   onSubmit(event) {
+    event.preventDefault();
     console.log(event);
     const {
       pipeline,
@@ -124,7 +127,8 @@ class CreatePipelineRun extends React.Component {
     return (
       <>
         {errorNotification}
-        <Form>
+        <Form onSubmit={this.onSubmit}>
+          {/* <Form> */}
           {(() => {
             const disabled = !!pipelineName;
             return (
@@ -151,21 +155,21 @@ class CreatePipelineRun extends React.Component {
           />
 
           <FormGroup legendText="Git Resource">
-            <TextInput
+            <ResourceNameTextInput
               labelText="Name"
               placeholder="git-source"
               name="gitName"
               value={this.state.gitName}
               onChange={this.onInputChange}
             />
-            <TextInput
+            <UrlTextInput
               labelText="Repository URL"
               placeholder="https://github.com/user/project"
               name="gitRepoURL"
               value={this.state.gitRepoURL}
               onChange={this.onInputChange}
             />
-            <TextInput
+            <NoSpacesTextInput
               labelText="Revision"
               helperText="Branch name or commit ID"
               placeholder="master"
@@ -176,21 +180,21 @@ class CreatePipelineRun extends React.Component {
           </FormGroup>
 
           <FormGroup legendText="Image Resource">
-            <TextInput
+            <ResourceNameTextInput
               labelText="Name"
               placeholder="docker-image"
               name="imageName"
               value={this.state.imageName}
               onChange={this.onInputChange}
             />
-            <TextInput
+            <NoSpacesTextInput
               labelText="Image Registry"
               placeholder="registryname"
               name="imageRegistryName"
               value={this.state.imageRegistryName}
               onChange={this.onInputChange}
             />
-            <TextInput
+            <NoSpacesTextInput
               labelText="Repository name"
               placeholder="reponame"
               name="imageRepoName"
@@ -200,7 +204,7 @@ class CreatePipelineRun extends React.Component {
           </FormGroup>
 
           <FormGroup legendText="Helm Options">
-            <TextInput
+            <ResourceNameTextInput
               labelText="Helm Secret"
               helperText="This is only required for a Helm pipeline"
               placeholder="helm-secret"
@@ -210,7 +214,8 @@ class CreatePipelineRun extends React.Component {
             />
           </FormGroup>
 
-          <Button onClick={this.onSubmit}>Create</Button>
+          <Button type="submit">Create</Button>
+          {/* <Button onClick={this.onSubmit}>Create</Button> */}
         </Form>
       </>
     );
