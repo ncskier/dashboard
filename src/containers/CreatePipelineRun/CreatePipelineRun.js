@@ -15,10 +15,13 @@ import React from 'react';
 import { connect } from 'react-redux';
 import {
   Form,
-  // Button,
+  Button,
   FormGroup,
   InlineNotification,
-  Modal
+  ComposedModal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter
 } from 'carbon-components-react';
 import { PipelinesDropdown, ServiceAccountsDropdown } from '..';
 import {
@@ -31,8 +34,6 @@ import UrlTextInput from '../../components/UrlTextInput';
 import NoSpacesTextInput from '../../components/NoSpacesTextInput';
 
 import './CreatePipelineRun.scss';
-
-// const secrets = ['default', 'git-secret', 'docker-secret', 'helm-secret'];
 
 class CreatePipelineRun extends React.Component {
   constructor(props) {
@@ -106,7 +107,8 @@ class CreatePipelineRun extends React.Component {
   }
 
   render() {
-    const { pipelineName, errorMessage, ...modalProps } = this.props;
+    // const { pipelineName, errorMessage, ...modalProps } = this.props;
+    const { pipelineName, errorMessage, open, onClose } = this.props;
 
     let errorNotification;
     if (errorMessage) {
@@ -121,108 +123,126 @@ class CreatePipelineRun extends React.Component {
 
     return (
       <>
-        <Modal
-          className="create-pipelinerun"
-          {...modalProps}
-          open={this.props.open}
-          modalHeading="Create PipelineRun"
-          modalLabel={pipelineName}
-          primaryButtonText="Create"
-          secondaryButtonText="Cancel"
-          onRequestSubmit={this.onSubmit}
-        >
-          {errorNotification}
-          {/* <Form onSubmit={this.onSubmit}> */}
-          <Form>
-            {(() => {
-              const disabled = !!pipelineName;
-              return (
-                <PipelinesDropdown
-                  id="dropdown-pipeline"
-                  selectedItem={
-                    this.state.pipeline !== ''
-                      ? { text: this.state.pipeline }
-                      : ''
-                  }
-                  onChange={this.onPipelineChange}
-                  disabled={disabled}
-                />
-              );
-            })()}
-            <ServiceAccountsDropdown
-              id="dropdown-service-account"
-              selectedItem={
-                this.state.serviceAccount !== ''
-                  ? { text: this.state.serviceAccount }
-                  : ''
-              }
-              onChange={this.onServiceAccountChange}
+        <Form onSubmit={this.onSubmit}>
+          <ComposedModal
+            // {...modalProps}
+            className="create-pipelinerun"
+            modalHeading="Create PipelineRun"
+            modalLabel={pipelineName}
+            primaryButtonText="Create"
+            secondaryButtonText="Cancel"
+            // onRequestSubmit={this.onSubmit}
+            onClose={onClose}
+            open={open}
+          >
+            <ModalHeader
+              title="Create PipelineRun"
+              label={pipelineName}
+              closeModal={onClose}
             />
+            <ModalBody>
+              {errorNotification}
+              {/* <Form onSubmit={this.onSubmit}> */}
+              {/* <Form> */}
+              {(() => {
+                const disabled = !!pipelineName;
+                return (
+                  <PipelinesDropdown
+                    id="dropdown-pipeline"
+                    selectedItem={
+                      this.state.pipeline !== ''
+                        ? { text: this.state.pipeline }
+                        : ''
+                    }
+                    onChange={this.onPipelineChange}
+                    disabled={disabled}
+                  />
+                );
+              })()}
+              <ServiceAccountsDropdown
+                id="dropdown-service-account"
+                selectedItem={
+                  this.state.serviceAccount !== ''
+                    ? { text: this.state.serviceAccount }
+                    : ''
+                }
+                onChange={this.onServiceAccountChange}
+              />
 
-            <FormGroup legendText="Git Resource">
-              <ResourceNameTextInput
-                labelText="Name"
-                placeholder="git-source"
-                name="gitName"
-                value={this.state.gitName}
-                onChange={this.onInputChange}
-              />
-              <UrlTextInput
-                labelText="Repository URL"
-                placeholder="https://github.com/user/project"
-                name="gitRepoURL"
-                value={this.state.gitRepoURL}
-                onChange={this.onInputChange}
-              />
-              <NoSpacesTextInput
-                labelText="Revision"
-                helperText="Branch name or commit ID"
-                placeholder="master"
-                name="gitRevision"
-                value={this.state.gitRevision}
-                onChange={this.onInputChange}
-              />
-            </FormGroup>
+              <FormGroup legendText="Git Resource">
+                <ResourceNameTextInput
+                  labelText="Name"
+                  placeholder="git-source"
+                  name="gitName"
+                  value={this.state.gitName}
+                  onChange={this.onInputChange}
+                />
+                <UrlTextInput
+                  labelText="Repository URL"
+                  placeholder="https://github.com/user/project"
+                  name="gitRepoURL"
+                  value={this.state.gitRepoURL}
+                  onChange={this.onInputChange}
+                />
+                <NoSpacesTextInput
+                  labelText="Revision"
+                  helperText="Branch name or commit ID"
+                  placeholder="master"
+                  name="gitRevision"
+                  value={this.state.gitRevision}
+                  onChange={this.onInputChange}
+                />
+              </FormGroup>
 
-            <FormGroup legendText="Image Resource">
-              <ResourceNameTextInput
-                labelText="Name"
-                placeholder="docker-image"
-                name="imageName"
-                value={this.state.imageName}
-                onChange={this.onInputChange}
-              />
-              <NoSpacesTextInput
-                labelText="Image Registry"
-                placeholder="registryname"
-                name="imageRegistryName"
-                value={this.state.imageRegistryName}
-                onChange={this.onInputChange}
-              />
-              <NoSpacesTextInput
-                labelText="Repository name"
-                placeholder="reponame"
-                name="imageRepoName"
-                value={this.state.imageRepoName}
-                onChange={this.onInputChange}
-              />
-            </FormGroup>
+              <FormGroup legendText="Image Resource">
+                <ResourceNameTextInput
+                  labelText="Name"
+                  placeholder="docker-image"
+                  name="imageName"
+                  value={this.state.imageName}
+                  onChange={this.onInputChange}
+                />
+                <NoSpacesTextInput
+                  labelText="Image Registry"
+                  placeholder="registryname"
+                  name="imageRegistryName"
+                  value={this.state.imageRegistryName}
+                  onChange={this.onInputChange}
+                />
+                <NoSpacesTextInput
+                  labelText="Repository name"
+                  placeholder="reponame"
+                  name="imageRepoName"
+                  value={this.state.imageRepoName}
+                  onChange={this.onInputChange}
+                />
+              </FormGroup>
 
-            <FormGroup legendText="Helm Options">
-              <ResourceNameTextInput
-                labelText="Helm Secret"
-                helperText="This is only required for a Helm pipeline"
-                placeholder="helm-secret"
-                name="helmSecret"
-                value={this.state.helmSecret}
-                onChange={this.onInputChange}
-              />
-            </FormGroup>
+              <FormGroup legendText="Helm Options">
+                <ResourceNameTextInput
+                  labelText="Helm Secret"
+                  helperText="This is only required for a Helm pipeline"
+                  placeholder="helm-secret"
+                  name="helmSecret"
+                  value={this.state.helmSecret}
+                  onChange={this.onInputChange}
+                />
+              </FormGroup>
 
-            {/* <Button type="submit">Create</Button> */}
-            {/* <Button onClick={this.onSubmit}>Create</Button> */}
-          </Form>
-        </Modal>
+              {/* <Button type="submit">Create</Button> */}
+              {/* <Button onClick={this.onSubmit}>Create</Button> */}
+              {/* </Form> */}
+            </ModalBody>
+            <ModalFooter>
+              <Button kind="secondary" onClick={onClose}>
+                Cancel
+              </Button>
+              <Button kind="primary" type="submit">
+                Submit
+              </Button>
+            </ModalFooter>
+          </ComposedModal>
+        </Form>
       </>
     );
   }

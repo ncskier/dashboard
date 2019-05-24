@@ -46,12 +46,7 @@ export /* istanbul ignore next */ class PipelineRuns extends Component {
       showCreatePipelineRunModal: false
     };
 
-    this.showCreatePipelineRunModal = this.showCreatePipelineRunModal.bind(
-      this
-    );
-    this.hideCreatePipelineRunModal = this.hideCreatePipelineRunModal.bind(
-      this
-    );
+    this.toggleModal = this.toggleModal.bind(this);
   }
 
   componentDidMount() {
@@ -69,22 +64,14 @@ export /* istanbul ignore next */ class PipelineRuns extends Component {
     }
   }
 
+  toggleModal = showCreatePipelineRunModal => {
+    this.setState({ showCreatePipelineRunModal });
+  };
+
   fetchPipelineRuns() {
     const { params } = this.props.match;
     const { pipelineName } = params;
     this.props.fetchPipelineRuns({ pipelineName });
-  }
-
-  showCreatePipelineRunModal() {
-    this.setState({
-      showCreatePipelineRunModal: true
-    });
-  }
-
-  hideCreatePipelineRunModal() {
-    this.setState({
-      showCreatePipelineRunModal: false
-    });
   }
 
   render() {
@@ -96,14 +83,14 @@ export /* istanbul ignore next */ class PipelineRuns extends Component {
         <Button
           iconDescription="Button icon"
           renderIcon={Add}
-          onClick={this.showCreatePipelineRunModal}
+          onClick={() => this.toggleModal(true)}
           // style={{ float: 'right' }}
         >
           Create PipelineRun
         </Button>
         <CreatePipelineRun
           open={this.state.showCreatePipelineRunModal}
-          onRequestClose={this.hideCreatePipelineRunModal}
+          onClose={() => this.toggleModal(false)}
           pipelineName={pipelineName}
         />
         {(() => {
