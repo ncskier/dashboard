@@ -30,4 +30,14 @@ limitations under the License.
   .bx--modal-content {
     margin-bottom: $carbon--spacing-07
   }
+
+  .bx--dropdown__wrapper,
+  .bx--form-item {
+    margin-bottom: $carbon--spacing-06;
+  }
+
+  .bx--list-box__menu,
+  .bx--list-box {
+    background-color: #ffffff;
+  }
 }
