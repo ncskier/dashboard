@@ -169,7 +169,7 @@ class CreatePipelineRun extends React.Component {
                 onChange={this.onServiceAccountChange}
               />
 
-              <FormGroup legendText="Git Resource">
+              <FormGroup legendText="Git Resource (optional)">
                 <ResourceNameTextInput
                   labelText="Name"
                   placeholder="git-source"
@@ -194,7 +194,7 @@ class CreatePipelineRun extends React.Component {
                 />
               </FormGroup>
 
-              <FormGroup legendText="Image Resource">
+              <FormGroup legendText="Image Resource (optional)">
                 <ResourceNameTextInput
                   labelText="Name"
                   placeholder="docker-image"
@@ -218,10 +218,9 @@ class CreatePipelineRun extends React.Component {
                 />
               </FormGroup>
 
-              <FormGroup legendText="Helm Options">
+              <FormGroup legendText="Helm (optional)">
                 <ResourceNameTextInput
-                  labelText="Helm Secret"
-                  helperText="This is only required for a Helm pipeline"
+                  labelText="Secret"
                   placeholder="helm-secret"
                   name="helmSecret"
                   value={this.state.helmSecret}
