@@ -52,6 +52,7 @@ import {
 } from '../../reducers';
 
 import '../../components/App/App.scss';
+import Sandbox from '../Sandbox';
 
 export /* istanbul ignore next */ class App extends Component {
   componentDidMount() {
@@ -135,6 +136,7 @@ export /* istanbul ignore next */ class App extends Component {
                 path="/pipelines/:pipelineName/runs/:pipelineRunName"
                 component={PipelineRun}
               />
+              <Route path="/sandbox" exact component={Sandbox} />
               <Route path="/extensions" exact component={Extensions} />
               {extensions.map(({ displayName, name, source }) => (
                 <Route
