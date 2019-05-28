@@ -91,6 +91,7 @@ export /* istanbul ignore next */ class PipelineRuns extends Component {
         <CreatePipelineRun
           open={this.state.showCreatePipelineRunModal}
           onClose={() => this.toggleModal(false)}
+          onSuccess={() => this.toggleModal(false)}
           pipelineName={pipelineName}
         />
         {(() => {

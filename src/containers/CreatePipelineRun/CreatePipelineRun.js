@@ -21,7 +21,8 @@ import {
   ComposedModal,
   ModalHeader,
   ModalBody,
-  ModalFooter
+  ModalFooter,
+  TextInput
 } from 'carbon-components-react';
 import { PipelinesDropdown, ServiceAccountsDropdown } from '..';
 import {
@@ -29,11 +30,17 @@ import {
   isFetchingPipelineRuns
 } from '../../reducers';
 import { createPipelineRunAction } from '../../actions/pipelineRuns';
-import ResourceNameTextInput from '../../components/ResourceNameTextInput';
-import UrlTextInput from '../../components/UrlTextInput';
-import NoSpacesTextInput from '../../components/NoSpacesTextInput';
+// import ResourceNameTextInput from '../../components/ResourceNameTextInput';
+// import UrlTextInput from '../../components/UrlTextInput';
+// import NoSpacesTextInput from '../../components/NoSpacesTextInput';
+// import PatternTextInput from '../../components/PatternTextInput';
 
 import './CreatePipelineRun.scss';
+
+const resourceNamePattern = '^[-.a-z1-9]*$';
+const resourceNameInvalidText = '';
+const noSpacesPattern = '^\\S*$';
+const noSpacesInvalidText = 'No spaces allowed';
 
 class CreatePipelineRun extends React.Component {
   constructor(props) {
@@ -49,13 +56,27 @@ class CreatePipelineRun extends React.Component {
       imageName: '',
       imageRegistryName: '',
       imageRepoName: '',
-      helmSecret: ''
+      helmSecret: '',
+      submit: false
     };
 
     this.onPipelineChange = this.onPipelineChange.bind(this);
     this.onServiceAccountChange = this.onServiceAccountChange.bind(this);
     this.onInputChange = this.onInputChange.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
+    this.onClose = this.onClose.bind(this);
+    // this.reset = this.reset.bind(this);
+  }
+
+  componentDidUpdate(prevProps) {
+    if (
+      prevProps.isFetching !== this.props.isFetching &&
+      !this.props.isFetching &&
+      !this.props.errorMessage &&
+      this.state.submit
+    ) {
+      this.props.onSuccess();
+    }
   }
 
   onPipelineChange({ selectedItem }) {
@@ -79,36 +100,52 @@ class CreatePipelineRun extends React.Component {
 
   onSubmit(event) {
     event.preventDefault();
+    console.log(this.state);
     console.log(event);
-    const {
-      pipeline,
-      serviceAccount,
-      gitName,
-      gitRepoURL,
-      gitRevision,
-      imageName,
-      imageRegistryName,
-      imageRepoName,
-      helmSecret
-    } = this.state;
     const payload = {
-      pipelinename: pipeline,
-      serviceaccount: serviceAccount,
-      repourl: gitRepoURL,
-      gitresourcename: gitName,
-      gitcommit: gitRevision,
-      registrylocation: imageRegistryName,
-      reponame: imageRepoName,
-      imageresourcename: imageName,
-      helmsecret: helmSecret
+      pipelinename: this.state.pipeline,
+      serviceaccount: this.state.serviceAccount,
+      repourl: this.state.gitRepoURL,
+      gitresourcename: this.state.gitName,
+      gitcommit: this.state.gitRevision,
+      registrylocation: this.state.imageRegistryName,
+      reponame: this.state.imageRepoName,
+      imageresourcename: this.state.imageName,
+      helmsecret: this.state.helmSecret
     };
     console.log(payload);
     this.props.createPipelineRunAction({ payload });
+    this.setState({
+      submit: true
+    });
   }
+
+  onClose() {
+    // this.reset();
+    this.props.onClose();
+  }
+
+  // reset() {
+  //   this.setState((state, props) => {
+  //     const { pipelineName } = props;
+  //     return {
+  //       pipeline: pipelineName || '',
+  //       serviceAccount: '',
+  //       gitName: '',
+  //       gitRevision: '',
+  //       gitRepoURL: '',
+  //       imageName: '',
+  //       imageRegistryName: '',
+  //       imageRepoName: '',
+  //       helmSecret: '',
+  //       submit: false
+  //     };
+  //   });
+  // }
 
   render() {
     // const { pipelineName, errorMessage, ...modalProps } = this.props;
-    const { pipelineName, errorMessage, open, onClose } = this.props;
+    const { pipelineName, errorMessage, open } = this.props;
 
     let errorNotification;
     if (errorMessage) {
@@ -132,13 +169,13 @@ class CreatePipelineRun extends React.Component {
             primaryButtonText="Create"
             secondaryButtonText="Cancel"
             // onRequestSubmit={this.onSubmit}
-            onClose={onClose}
+            onClose={this.onClose}
             open={open}
           >
             <ModalHeader
               title="Create PipelineRun"
               label={pipelineName}
-              closeModal={onClose}
+              closeModal={this.onClose}
             />
             <ModalBody>
               {errorNotification}
@@ -156,6 +193,7 @@ class CreatePipelineRun extends React.Component {
                     }
                     onChange={this.onPipelineChange}
                     disabled={disabled}
+                    required
                   />
                 );
               })()}
@@ -167,10 +205,11 @@ class CreatePipelineRun extends React.Component {
                     : ''
                 }
                 onChange={this.onServiceAccountChange}
+                required
               />
 
               <FormGroup legendText="Git Resource (optional)">
-                <ResourceNameTextInput
+                {/* <ResourceNameTextInput
                   labelText="Name"
                   placeholder="git-source"
                   name="gitName"
@@ -191,11 +230,37 @@ class CreatePipelineRun extends React.Component {
                   name="gitRevision"
                   value={this.state.gitRevision}
                   onChange={this.onInputChange}
+                /> */}
+                <TextInput
+                  labelText="Name"
+                  placeholder="git-source"
+                  name="gitName"
+                  pattern={resourceNamePattern}
+                  invalidText={resourceNameInvalidText}
+                  value={this.state.gitName}
+                  onChange={this.onInputChange}
+                />
+                <TextInput
+                  labelText="Repository URL"
+                  placeholder="https://github.com/user/project"
+                  name="gitRepoURL"
+                  value={this.state.gitRepoURL}
+                  onChange={this.onInputChange}
+                />
+                <TextInput
+                  labelText="Revision"
+                  helperText="Branch name or commit ID"
+                  placeholder="master"
+                  name="gitRevision"
+                  pattern={noSpacesPattern}
+                  invalidText={noSpacesInvalidText}
+                  value={this.state.gitRevision}
+                  onChange={this.onInputChange}
                 />
               </FormGroup>
 
               <FormGroup legendText="Image Resource (optional)">
-                <ResourceNameTextInput
+                {/* <ResourceNameTextInput
                   labelText="Name"
                   placeholder="docker-image"
                   name="imageName"
@@ -215,14 +280,50 @@ class CreatePipelineRun extends React.Component {
                   name="imageRepoName"
                   value={this.state.imageRepoName}
                   onChange={this.onInputChange}
+                /> */}
+                <TextInput
+                  labelText="Name"
+                  placeholder="docker-image"
+                  name="imageName"
+                  pattern={resourceNamePattern}
+                  invalidText={resourceNameInvalidText}
+                  value={this.state.imageName}
+                  onChange={this.onInputChange}
+                />
+                <TextInput
+                  labelText="Image Registry"
+                  placeholder="registryname"
+                  name="imageRegistryName"
+                  pattern={noSpacesPattern}
+                  invalidText={noSpacesInvalidText}
+                  value={this.state.imageRegistryName}
+                  onChange={this.onInputChange}
+                />
+                <TextInput
+                  labelText="Repository name"
+                  placeholder="reponame"
+                  name="imageRepoName"
+                  pattern={noSpacesPattern}
+                  invalidText={noSpacesInvalidText}
+                  value={this.state.imageRepoName}
+                  onChange={this.onInputChange}
                 />
               </FormGroup>
 
               <FormGroup legendText="Helm (optional)">
-                <ResourceNameTextInput
+                {/* <ResourceNameTextInput
                   labelText="Secret"
                   placeholder="helm-secret"
                   name="helmSecret"
+                  value={this.state.helmSecret}
+                  onChange={this.onInputChange}
+                /> */}
+                <TextInput
+                  labelText="Secret"
+                  placeholder="helm-secret"
+                  name="helmSecret"
+                  pattern={resourceNamePattern}
+                  invalidText={resourceNameInvalidText}
                   value={this.state.helmSecret}
                   onChange={this.onInputChange}
                 />
@@ -233,7 +334,7 @@ class CreatePipelineRun extends React.Component {
               {/* </Form> */}
             </ModalBody>
             <ModalFooter>
-              <Button kind="secondary" onClick={onClose}>
+              <Button kind="secondary" onClick={this.onClose}>
                 Cancel
               </Button>
               <Button kind="primary" type="submit">
@@ -248,7 +349,9 @@ class CreatePipelineRun extends React.Component {
 }
 
 CreatePipelineRun.defaultProps = {
-  open: false
+  open: false,
+  onClose: () => {},
+  onSuccess: () => {}
 };
 
 const mapStateToProps = state => {
