@@ -37,8 +37,9 @@ import {
   Pipelines,
   Tasks,
   TaskRuns,
-  CreatePipelineRun,
-  NamespacesDropdown
+  CustomResourceDefinition,
+  NamespacesDropdown,
+  ImportResources
 } from '..';
 
 import SideNavMenu from '../../components/SideNavMenu';
@@ -85,6 +86,13 @@ export /* istanbul ignore next */ class App extends Component {
                 <SideNavLink element={NavLink} icon={<span />} to="/tasks">
                   Tasks
                 </SideNavLink>
+                <SideNavLink
+                  element={NavLink}
+                  icon={<span />}
+                  to="/importresources"
+                >
+                  Import Tekton resources
+                </SideNavLink>
               </SideNavMenu>
               <NamespacesDropdown
                 id="namespaces-dropdown"
@@ -114,16 +122,6 @@ export /* istanbul ignore next */ class App extends Component {
 
           <Content>
             <Switch>
-              <Redirect
-                from="/pipelines/:pipelineName"
-                exact
-                to="/pipelines/:pipelineName/runs"
-              />
-              <Redirect
-                from="/tasks/:taskName"
-                exact
-                to="/tasks/:taskName/runs"
-              />
               <Route path="/pipelines" exact component={Pipelines} />
               <Route path="/tasks" exact component={Tasks} />
               <Route path="/pipelineruns" component={PipelineRuns} />
@@ -137,12 +135,7 @@ export /* istanbul ignore next */ class App extends Component {
                 path="/pipelines/:pipelineName/runs/:pipelineRunName"
                 component={PipelineRun}
               />
-              <Route path="/create-pipelinerun" component={CreatePipelineRun} />
-              <Route
-                path="/pipelines/:pipelineName/create-pipelinerun"
-                exact
-                component={CreatePipelineRun}
-              />
+              <Route path="/importresources" component={ImportResources} />
               <Route path="/extensions" exact component={Extensions} />
               {extensions.map(({ displayName, name, source }) => (
                 <Route
@@ -157,6 +150,11 @@ export /* istanbul ignore next */ class App extends Component {
                   )}
                 />
               ))}
+              <Route
+                path="/:type/:name"
+                exact
+                component={CustomResourceDefinition}
+              />
               <Redirect to="/pipelines" />
             </Switch>
           </Content>

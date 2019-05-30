@@ -17,8 +17,12 @@ export { default as PipelineRun } from './PipelineRun';
 export { default as PipelineRuns } from './PipelineRuns';
 export { default as Pipelines } from './Pipelines';
 export { default as Tasks } from './Tasks';
+export {
+  default as CustomResourceDefinition
+} from './CustomResourceDefinition';
 export { default as TaskRuns } from './TaskRuns';
 export { default as CreatePipelineRun } from './CreatePipelineRun';
+export { default as ImportResources } from './ImportResources';
 export { default as NamespacesDropdown } from './NamespacesDropdown';
 export { default as ServiceAccountsDropdown } from './ServiceAccountsDropdown';
 export { default as PipelinesDropdown } from './PipelinesDropdown';
