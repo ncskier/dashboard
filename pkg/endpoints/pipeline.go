@@ -22,12 +22,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/tektoncd/dashboard/pkg/broadcaster"
-	"github.com/tektoncd/dashboard/pkg/utils"
-
 	restful "github.com/emicklei/go-restful"
 	uuid "github.com/satori/go.uuid"
+	"github.com/tektoncd/dashboard/pkg/broadcaster"
 	logging "github.com/tektoncd/dashboard/pkg/logging"
+	"github.com/tektoncd/dashboard/pkg/utils"
 	v1alpha1 "github.com/tektoncd/pipeline/pkg/apis/pipeline/v1alpha1"
 	informers "github.com/tektoncd/pipeline/pkg/client/informers/externalversions"
 	v1 "k8s.io/api/core/v1"
@@ -84,7 +83,6 @@ type ManualPipelineRun struct {
 	REPONAME          string `json:"reponame,omitempty"`
 	REPOURL           string `json:"repourl,omitempty"`
 	HELMSECRET        string `json:"helmsecret,omitempty"`
-	REGISTRYSECRET    string `json:"registrysecret,omitempty"`
 }
 
 // PipelineRunUpdateBody - represents a request that a user may provide for updating a PipelineRun
@@ -326,9 +324,6 @@ func (r Resource) CreatePipelineRunImpl(pipelineRunData ManualPipelineRun, names
 		params = []v1alpha1.Param{{Name: "target-namespace", Value: namespace}}
 	}
 
-	if pipelineRunData.REGISTRYSECRET != "" {
-		params = append(params, v1alpha1.Param{Name: "registry-secret", Value: pipelineRunData.REGISTRYSECRET})
-	}
 	if pipelineRunData.HELMSECRET != "" {
 		params = append(params, v1alpha1.Param{Name: "helm-secret", Value: pipelineRunData.HELMSECRET})
 	}

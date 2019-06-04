@@ -84,6 +84,11 @@ export function cancelPipelineRun(name, namespace) {
   return put(uri, { status: 'PipelineRunCancelled' });
 }
 
+export function createPipelineRun(payload, namespace) {
+  const uri = getAPI('pipelineruns', { namespace });
+  return post(uri, payload);
+}
+
 export function getTasks(namespace) {
   const uri = getAPI('tasks', { namespace });
   return get(uri).then(checkData);
@@ -126,11 +131,6 @@ export function getPodLog(name, namespace) {
 export function getTaskRunLog(name, namespace) {
   const uri = getAPI('taskrunlogs', { name, namespace });
   return get(uri);
-}
-
-export function createPipelineRun(payload) {
-  const uri = `${apiRoot}/`;
-  return post(uri, payload);
 }
 
 export function getCredentials(namespace) {

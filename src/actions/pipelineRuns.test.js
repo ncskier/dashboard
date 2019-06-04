@@ -19,7 +19,8 @@ import * as selectors from '../reducers';
 import {
   fetchPipelineRun,
   fetchPipelineRuns,
-  fetchPipelineRunsSuccess
+  fetchPipelineRunsSuccess,
+  createPipelineRunAction
 } from './pipelineRuns';
 
 it('fetchPipelineRunsSuccess', () => {
@@ -105,5 +106,72 @@ it('fetchPipelineRuns error', async () => {
   ];
 
   await store.dispatch(fetchPipelineRuns());
+  expect(store.getActions()).toEqual(expectedActions);
+});
+
+it('createPipelineRunAction', async () => {
+  const pipelines = { fake: 'pipelines' };
+  const middleware = [thunk];
+  const mockStore = configureStore(middleware);
+  const store = mockStore();
+
+  jest.spyOn(API, 'createPipelineRun').mockImplementation(() => {});
+  jest.spyOn(API, 'getPipelineRuns').mockImplementation(() => pipelines);
+
+  const expectedActions = [
+    { type: 'PIPELINE_RUNS_FETCH_REQUEST' },
+    fetchPipelineRunsSuccess(pipelines)
+  ];
+
+  await store.dispatch(
+    createPipelineRunAction({ payload: { pipeline: 'fake' } })
+  );
+  expect(store.getActions()).toEqual(expectedActions);
+});
+
+it('createPipelineRunAction create error', async () => {
+  const pipelines = { fake: 'pipelines' };
+  const middleware = [thunk];
+  const mockStore = configureStore(middleware);
+  const store = mockStore();
+
+  const error = new Error();
+
+  jest.spyOn(API, 'createPipelineRun').mockImplementation(() => {
+    throw error;
+  });
+  jest.spyOn(API, 'getPipelineRuns').mockImplementation(() => pipelines);
+
+  const expectedActions = [
+    { type: 'PIPELINE_RUNS_FETCH_REQUEST' },
+    { type: 'PIPELINE_RUNS_FETCH_FAILURE', error }
+  ];
+
+  await store.dispatch(
+    createPipelineRunAction({ payload: { pipeline: 'fake' } })
+  );
+  expect(store.getActions()).toEqual(expectedActions);
+});
+
+it('createPipelineRunAction get error', async () => {
+  const middleware = [thunk];
+  const mockStore = configureStore(middleware);
+  const store = mockStore();
+
+  const error = new Error();
+
+  jest.spyOn(API, 'createPipelineRun').mockImplementation(() => {});
+  jest.spyOn(API, 'getPipelineRuns').mockImplementation(() => {
+    throw error;
+  });
+
+  const expectedActions = [
+    { type: 'PIPELINE_RUNS_FETCH_REQUEST' },
+    { type: 'PIPELINE_RUNS_FETCH_FAILURE', error }
+  ];
+
+  await store.dispatch(
+    createPipelineRunAction({ payload: { pipeline: 'fake' } })
+  );
   expect(store.getActions()).toEqual(expectedActions);
 });
