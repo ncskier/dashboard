@@ -22,7 +22,7 @@ const itemToElement = ({ id, text }) => {
   );
 };
 
-const itemToString = ({ text }) => text;
+const itemToString = item => (item ? item.text : '');
 
 const itemToObject = item => {
   if (typeof item === 'string') {

@@ -111,22 +111,4 @@ storiesOf('ServiceAccountsDropdown', module)
         <ServiceAccountsDropdown {...props} />
       </Provider>
     );
-  })
-  .add('empty', () => {
-    const store = mockStore({
-      serviceAccounts: {
-        byId: {},
-        byNamespace: {},
-        isFetching: false
-      },
-      namespaces: {
-        byName: namespacesByName,
-        selected: 'default'
-      }
-    });
-    return (
-      <Provider store={store}>
-        <ServiceAccountsDropdown {...props} />
-      </Provider>
-    );
   });

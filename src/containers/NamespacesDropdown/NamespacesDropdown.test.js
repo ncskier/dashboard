@@ -118,22 +118,6 @@ it('NamespacesDropdown renders loading skeleton based on Redux state', () => {
   expect(queryByText(initialTextRegExp)).toBeFalsy();
 });
 
-it('NamespacesDropdown renders empty', () => {
-  const store = mockStore({
-    namespaces: {
-      byName: {},
-      isFetching: false
-    }
-  });
-
-  const { queryByText } = render(
-    <Provider store={store}>
-      <NamespacesDropdown {...props} />
-    </Provider>
-  );
-  expect(queryByText(/no namespaces found/i)).toBeTruthy();
-});
-
 it('NamespacesDropdown handles onChange event', () => {
   const store = mockStore({
     namespaces: {

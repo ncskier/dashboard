@@ -66,17 +66,4 @@ storiesOf('NamespacesDropdown', module)
         <NamespacesDropdown {...props} />
       </Provider>
     );
-  })
-  .add('empty', () => {
-    const store = mockStore({
-      namespaces: {
-        byName: {},
-        isFetching: false
-      }
-    });
-    return (
-      <Provider store={store}>
-        <NamespacesDropdown {...props} />
-      </Provider>
-    );
   });

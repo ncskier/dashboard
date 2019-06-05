@@ -83,6 +83,7 @@ type ManualPipelineRun struct {
 	REPONAME          string `json:"reponame,omitempty"`
 	REPOURL           string `json:"repourl,omitempty"`
 	HELMSECRET        string `json:"helmsecret,omitempty"`
+	APPLYDIRECTORY    string `json:"applydirectory,omitempty"`
 }
 
 // PipelineRunUpdateBody - represents a request that a user may provide for updating a PipelineRun
@@ -327,6 +328,10 @@ func (r Resource) CreatePipelineRunImpl(pipelineRunData ManualPipelineRun, names
 	if pipelineRunData.HELMSECRET != "" {
 		params = append(params, v1alpha1.Param{Name: "helm-secret", Value: pipelineRunData.HELMSECRET})
 	}
+	if pipelineRunData.APPLYDIRECTORY != "" {
+		params = append(params, v1alpha1.Param{Name: "apply-directory", Value: pipelineRunData.APPLYDIRECTORY})
+	}
+
 	// PipelineRun yaml defines references to resources
 	newPipelineRunData, err := definePipelineRun(generatedPipelineRunName, namespace, serviceAccount, pipelineRunData.REPOURL, pipeline, v1alpha1.PipelineTriggerTypeManual, resources, params)
 	if err != nil {
@@ -794,5 +799,3 @@ func (r Resource) pipelineRunDeleted(obj interface{}) {
 
 	pipelineRunsChannel <- data
 }
-
-
