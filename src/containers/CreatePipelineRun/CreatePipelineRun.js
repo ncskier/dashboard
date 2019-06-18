@@ -199,8 +199,8 @@ class CreatePipelineRun extends React.Component {
 
   handleSubmit(event) {
     event.preventDefault();
-    console.log('submit state:');
-    console.log(this.state);
+    // console.log('submit state:');
+    // console.log(this.state);
 
     if (!this.checkFormValidation()) {
       this.setState({
@@ -257,7 +257,13 @@ class CreatePipelineRun extends React.Component {
   }
 
   initialState() {
-    const { pipelineRef, namespace, resourcesSpec, paramsSpec } = this.props;
+    const {
+      pipelineRef,
+      namespace,
+      resourcesSpec,
+      paramsSpec,
+      errorGettingPipeline
+    } = this.props;
     // console.log('INITIAL STATE props:');
     return {
       namespace: {
@@ -272,16 +278,12 @@ class CreatePipelineRun extends React.Component {
         value: '',
         invalid: false
       },
-      specInput: {
-        value: '',
-        invalid: false
-      },
       resourcesSpec,
       resources: initialResourcesState(resourcesSpec),
       paramsSpec,
       params: initialParamsState(paramsSpec),
       errorMessage: '',
-      errorGettingPipeline: false,
+      errorGettingPipeline,
       submitValidationError: false
     };
   }
@@ -386,7 +388,7 @@ class CreatePipelineRun extends React.Component {
                 subtitle=""
               />
             )}
-            <FormGroup>
+            <FormGroup legendText="">
               <NamespacesDropdown
                 id="namespaces-dropdown"
                 selectedItem={
@@ -505,17 +507,21 @@ const mapStateToProps = (state, ownProps) => {
   const { pipelineRef, namespace } = ownProps;
   let resources;
   let params;
+  let errorGettingPipeline;
   if (pipelineRef) {
     const pipeline = getPipeline(state, { name: pipelineRef, namespace });
     if (pipeline) {
       ({ resources, params } = pipeline.spec);
+    } else {
+      errorGettingPipeline = true;
     }
   }
 
   return {
     selectedNamespace: getSelectedNamespace(state),
     resourcesSpec: resources,
-    paramsSpec: params
+    paramsSpec: params,
+    errorGettingPipeline
   };
 };
 

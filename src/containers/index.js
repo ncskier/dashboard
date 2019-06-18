@@ -30,6 +30,5 @@ export { default as Pipelines } from './Pipelines';
 export { default as PipelinesDropdown } from './PipelinesDropdown';
 export { default as ServiceAccountsDropdown } from './ServiceAccountsDropdown';
 export { default as SideNav } from './SideNav';
-export { default as SpecInput } from './SpecInput';
 export { default as Tasks } from './Tasks';
 export { default as TaskRuns } from './TaskRuns';
