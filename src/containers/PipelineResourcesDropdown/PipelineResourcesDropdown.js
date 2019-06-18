@@ -37,7 +37,7 @@ class PipelineResourcesDropdown extends React.Component {
   }
 
   render() {
-    const { namespace, ...rest } = this.props;
+    const { namespace, showType, ...rest } = this.props;
     const emptyText =
       namespace === ALL_NAMESPACES
         ? `No Pipeline Resources found`
@@ -54,10 +54,13 @@ PipelineResourcesDropdown.defaultProps = {
 };
 
 function mapStateToProps(state, ownProps) {
+  const { showType } = ownProps;
   const namespace = ownProps.namespace || getSelectedNamespace(state);
   return {
-    items: getPipelineResources(state, { namespace }).map(
-      pipelineResource => pipelineResource.metadata.name
+    items: getPipelineResources(state, { namespace }).map(pipelineResource =>
+      showType
+        ? `${pipelineResource.metadata.name} (${pipelineResource.spec.type})`
+        : pipelineResource.metadata.name
     ),
     loading: isFetchingPipelineResources(state),
     namespace

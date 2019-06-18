@@ -15,6 +15,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import {
+  Button,
   InlineNotification,
   StructuredListBody,
   StructuredListCell,
@@ -23,6 +24,7 @@ import {
   StructuredListSkeleton,
   StructuredListWrapper
 } from 'carbon-components-react';
+import Add from '@carbon/icons-react/lib/add/16';
 
 import { ALL_NAMESPACES } from '../../constants';
 import { getStatus, getStatusIcon } from '../../utils';
@@ -35,8 +37,22 @@ import {
   getSelectedNamespace,
   isFetchingPipelineRuns
 } from '../../reducers';
+import { CreatePipelineRun } from '..';
 
 export /* istanbul ignore next */ class PipelineRuns extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      showCreatePipelineRunModal: false,
+      createdPipelineRun: false,
+      createdPipelineRunName: '',
+      createdPipelineRunURL: ''
+    };
+
+    this.toggleModal = this.toggleModal.bind(this);
+  }
+
   componentDidMount() {
     this.fetchPipelineRuns();
   }
@@ -51,6 +67,10 @@ export /* istanbul ignore next */ class PipelineRuns extends Component {
       this.fetchPipelineRuns();
     }
   }
+
+  toggleModal = showCreatePipelineRunModal => {
+    this.setState({ showCreatePipelineRunModal });
+  };
 
   fetchPipelineRuns() {
     const { match, namespace } = this.props;
@@ -73,6 +93,40 @@ export /* istanbul ignore next */ class PipelineRuns extends Component {
 
     return (
       <>
+        {this.state.createdPipelineRun && (
+          <InlineNotification
+            kind="success"
+            title="Successfully created a PipelineRun"
+            subtitle={
+              <Link to={this.state.createdPipelineRunURL}>
+                {this.state.createdPipelineRunName}
+              </Link>
+            }
+            hideCloseButton={false}
+          />
+        )}
+        <Button
+          iconDescription="Button icon"
+          renderIcon={Add}
+          onClick={() => this.toggleModal(true)}
+          style={{ float: 'right' }}
+        >
+          Create PipelineRun
+        </Button>
+        <CreatePipelineRun
+          open={this.state.showCreatePipelineRunModal}
+          onClose={() => this.toggleModal(false)}
+          onSuccess={({ name, url }) => {
+            this.toggleModal(false);
+            this.setState({
+              createdPipelineRun: true,
+              createdPipelineRunName: name,
+              createdPipelineRunURL: url
+            });
+          }}
+          pipelineRef={pipelineName}
+          namespace={selectedNamespace}
+        />
         {(() => {
           if (loading) {
             return <StructuredListSkeleton border />;

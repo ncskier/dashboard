@@ -21,11 +21,15 @@ export { default as ImportResources } from './ImportResources';
 export { default as NamespacesDropdown } from './NamespacesDropdown';
 export { default as PipelineResource } from './PipelineResource';
 export { default as PipelineResources } from './PipelineResources';
+export {
+  default as PipelineResourcesDropdown
+} from './PipelineResourcesDropdown';
 export { default as PipelineRun } from './PipelineRun';
 export { default as PipelineRuns } from './PipelineRuns';
 export { default as Pipelines } from './Pipelines';
 export { default as PipelinesDropdown } from './PipelinesDropdown';
 export { default as ServiceAccountsDropdown } from './ServiceAccountsDropdown';
 export { default as SideNav } from './SideNav';
+export { default as SpecInput } from './SpecInput';
 export { default as Tasks } from './Tasks';
 export { default as TaskRuns } from './TaskRuns';
