@@ -121,6 +121,12 @@ class CreatePipelineRun extends React.Component {
         params: initialParamsState(props.paramsSpec)
       };
     }
+    if (props.errorGettingPipeline !== state.errorGettingPipeline) {
+      updateState = {
+        ...updateState,
+        errorGettingPipeline: props.errorGettingPipeline
+      };
+    }
     if (Object.keys(updateState).length !== 0) {
       return updateState;
     }
@@ -512,6 +518,7 @@ const mapStateToProps = (state, ownProps) => {
     const pipeline = getPipeline(state, { name: pipelineRef, namespace });
     if (pipeline) {
       ({ resources, params } = pipeline.spec);
+      errorGettingPipeline = false;
     } else {
       errorGettingPipeline = true;
     }
