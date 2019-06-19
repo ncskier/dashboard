@@ -37,11 +37,18 @@ class PipelineResourcesDropdown extends React.Component {
   }
 
   render() {
-    const { namespace, ...rest } = this.props;
-    const emptyText =
-      namespace === ALL_NAMESPACES
-        ? `No Pipeline Resources found`
-        : `No Pipeline Resources found in the '${namespace}' namespace`;
+    const { namespace, type, ...rest } = this.props;
+    let emptyText = `No Pipeline Resources found`;
+    if (type) {
+      emptyText += ` of type '${type}'`;
+    }
+    if (namespace !== ALL_NAMESPACES) {
+      emptyText += ` in the '${namespace}' namespace`;
+    }
+    // const emptyText =
+    //   namespace === ALL_NAMESPACES
+    //     ? `No Pipeline Resources found`
+    //     : `No Pipeline Resources found in the '${namespace}' namespace`;
     return <TooltipDropdown {...rest} emptyText={emptyText} />;
   }
 }
@@ -55,9 +62,20 @@ PipelineResourcesDropdown.defaultProps = {
 
 function mapStateToProps(state, ownProps) {
   const namespace = ownProps.namespace || getSelectedNamespace(state);
+  const { type } = ownProps;
+  const pipelineResourcesReducer = (acc, pipelineResource) => {
+    if (!type || type === pipelineResource.spec.type) {
+      acc.push(pipelineResource.metadata.name);
+    }
+    return acc;
+  };
   return {
-    items: getPipelineResources(state, { namespace }).map(
-      pipelineResource => pipelineResource.metadata.name
+    // items: getPipelineResources(state, { namespace }).map(
+    //   pipelineResource => pipelineResource.metadata.name
+    // ),
+    items: getPipelineResources(state, { namespace }).reduce(
+      pipelineResourcesReducer,
+      []
     ),
     loading: isFetchingPipelineResources(state),
     namespace

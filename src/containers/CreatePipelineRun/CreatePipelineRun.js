@@ -453,6 +453,7 @@ class CreatePipelineRun extends React.Component {
                     titleText={resource.name}
                     helperText={resource.type}
                     namespace={namespaceValue}
+                    type={resource.type}
                     onChange={({ selectedItem }) =>
                       this.handleResourceChange(
                         resource.name,

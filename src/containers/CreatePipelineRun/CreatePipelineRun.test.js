@@ -22,11 +22,6 @@ import * as API from '../../api';
 import * as store from '../../store/index';
 import { ALL_NAMESPACES } from '../../constants';
 
-const invalidK8sName = 'invalidName';
-const invalidK8sNameRegExp = /must consist of only lower case alphanumeric characters, -, and . with at most 253 characters/i;
-const invalidNoSpacesName = 'invalid name';
-const invalidNoSpacesNameRegExp = /must contain no spaces/i;
-
 const allNamespacesTestStore = {
   namespaces: {
     selected: ALL_NAMESPACES,
@@ -116,8 +111,14 @@ const pipelineResourcesTestStore = {
     errorMessage: '',
     isFetching: false,
     byId: {
-      'id-pipeline-resource-1': { metadata: { name: 'pipeline-resource-1' } },
-      'id-pipeline-resource-2': { metadata: { name: 'pipeline-resource-2' } }
+      'id-pipeline-resource-1': {
+        metadata: { name: 'pipeline-resource-1' },
+        spec: { type: 'type-1' }
+      },
+      'id-pipeline-resource-2': {
+        metadata: { name: 'pipeline-resource-2' },
+        spec: { type: 'type-2' }
+      }
     },
     byNamespace: {
       default: {
