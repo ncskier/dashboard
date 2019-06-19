@@ -45,10 +45,6 @@ class PipelineResourcesDropdown extends React.Component {
     if (namespace !== ALL_NAMESPACES) {
       emptyText += ` in the '${namespace}' namespace`;
     }
-    // const emptyText =
-    //   namespace === ALL_NAMESPACES
-    //     ? `No Pipeline Resources found`
-    //     : `No Pipeline Resources found in the '${namespace}' namespace`;
     return <TooltipDropdown {...rest} emptyText={emptyText} />;
   }
 }
@@ -70,9 +66,6 @@ function mapStateToProps(state, ownProps) {
     return acc;
   };
   return {
-    // items: getPipelineResources(state, { namespace }).map(
-    //   pipelineResource => pipelineResource.metadata.name
-    // ),
     items: getPipelineResources(state, { namespace }).reduce(
       pipelineResourcesReducer,
       []
