@@ -1,0 +1,12 @@
+apiVersion: tekton.dev/v1alpha1
+kind: PipelineResource
+metadata:
+  name: git-source
+  namespace: tekton-pipelines
+spec:
+  type: git
+  params:
+    - name: url
+      value: https://github.com/pipeline-hotel/example-pipelines
+    - name: revision
+      value: master

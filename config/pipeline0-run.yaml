@@ -1,0 +1,24 @@
+apiVersion: tekton.dev/v1alpha1
+kind: PipelineRun
+metadata:
+  labels:
+    app: tekton-app
+    gitOrg: a-roberts
+    gitRepo: dashboard.git.git
+    gitServer: github.com
+    tekton.dev/pipeline: pipeline0
+  name: pipeline0-run-1568214561803
+  namespace: tekton-pipelines
+spec:
+  params:
+  - name: apply-directory
+    value: gwas
+  - name: target-namespace
+    value: tekton-pipelines
+  pipelineRef:
+    name: pipeline0
+  resources:
+  - name: git-source
+    resourceRef:
+      name: git-source
+  serviceAccount: tekton-dashboard
